@@ -26,4 +26,21 @@ public class SUBPATH extends NODE {
     public void cleanup() {
         this.names = null;
     }
+
+    @Override
+    public int calculateLength() {
+        length = 1;
+        this.childNodes.forEach((e)->length += NODE.database.getElement(e).getLength());
+        return length;
+    }
+    public ArrayList<Integer> getChildNodes() {
+        return childNodes;
+    }
+    @Override
+    public int getLength() {
+        if (length == 0) {
+            calculateLength();
+        }
+        return length;
+    }
 }

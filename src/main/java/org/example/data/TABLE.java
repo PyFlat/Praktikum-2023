@@ -18,8 +18,9 @@ public class TABLE {
     }
     public int getIndexByKey(String key) {
         for (int i=0;i<this.names.size();i++) {
-            if (this.names.get(i)==key) {return i;}
+            if (this.names.get(i).equals(key)) {return i;}
         }
+        System.out.println("WARNING! KEY NOT FOUND " + key);
         return -1;
     }
     public NODE_LIKE getElementByKey(String key) {
@@ -35,4 +36,6 @@ public class TABLE {
         System.out.println(Arrays.toString(elements.toArray()));
         System.out.println(Arrays.toString(names.toArray()));
     }
+    public static TABLE getTable() {return NODE.database;}
+    public ArrayList<NODE_LIKE> getElements() {return elements;}
 }

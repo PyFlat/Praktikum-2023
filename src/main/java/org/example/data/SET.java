@@ -21,4 +21,26 @@ public class SET extends NODE {
     public void cleanup() {
         this.names = null;
     }
+
+    @Override
+    public int calculateLength() {
+        length = 1;
+        this.childNodes.forEach((e)->isMaxLength(NODE.database.getElement(e).getLength()));
+        return length;
+    }
+    private void isMaxLength(int l) {
+        if (l+1 > length) {
+            length = l+1;
+        }
+    }
+    public ArrayList<Integer> getChildNodes() {
+        return childNodes;
+    }
+    @Override
+    public int getLength() {
+        if (length == 0) {
+            calculateLength();
+        }
+        return length;
+    }
 }
