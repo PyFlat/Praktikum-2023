@@ -52,7 +52,7 @@ public class GraphFrame extends JFrame {
             graph.getModel().endUpdate();
         }
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
-        graphComponent.setZoomFactor(10);
+        graphComponent.setZoomFactor(1);
         graphComponent.zoomOut();
         GraphFrame frame = new GraphFrame();
         frame.add(graphComponent);
@@ -88,6 +88,13 @@ public class GraphFrame extends JFrame {
         System.out.println("Called " +cidx+ " " + current.getName());
         //System.out.println(Arrays.toString(destinations.toArray()));
         if (current.type == NODETYPE.BASIC) {
+            if (destinations.size()>0) {
+                if (getVertex(linkTo, destinations.get(destinations.size()-1)) != null) {
+                    link_once(current, linkTo, cidx, destinations.get(destinations.size()-1)-cidx);
+                    return cidx;
+                }
+            }
+
             for (int destination: destinations) {
                 if (getVertex(linkTo, destination)!=null) {
                     link_once(current, linkTo, cidx, destination-cidx);
