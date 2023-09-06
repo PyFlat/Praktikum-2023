@@ -9,7 +9,7 @@
     },
     {
       "name": "Teilpfad-1",
-      "names": ["Aufzug-0","Regale-top","Aufzug-0"],
+      "names": ["Aufzug-0","Regale-top","Aufzug-0 (1)"],
       "probs": [1.0,1.0,1.0],
       "capacity": [-1,-1,-1],
       "type": 0
@@ -23,7 +23,7 @@
     }
   ],
   "nodes": [
-    "Quelle-0", "Ziel-0", "Ziel-1", "Ziel-2", "Ziel-3", "Ziel-4", "Ziel-5", "Ziel-6", "Ziel-7", "Ziel-8", "Ziel-9", "Ziel-12", "Ziel-13", "Warteschlange-0", "Warteschlange-1", "Warteschlange-2", "Aufzug-0"
+    "Quelle-0", "Ziel-0", "Ziel-1", "Ziel-2", "Ziel-3", "Ziel-4", "Ziel-5", "Ziel-6", "Ziel-7", "Ziel-8", "Ziel-9", "Ziel-12", "Ziel-13", "Warteschlange-0", "Warteschlange-1", "Warteschlange-2", "Aufzug-0", "Aufzug-0 (1)"
   ],
   "sets": [
     {

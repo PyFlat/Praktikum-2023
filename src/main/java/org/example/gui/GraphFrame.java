@@ -4,19 +4,27 @@ import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 import org.example.data.*;
+import org.example.data.analysis.dephtmap;
 
 import javax.swing.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public class GraphFrame extends JFrame {
-    public static void visualize(ArrayList<ArrayList<String>> map) {
-        mxGraph graph = new mxGraph() {
+    private static Object parent;
+    private static mxGraph graph;
+    private static ArrayList<ArrayList<Object>> vertices;
+    private static ArrayList<ArrayList<NODE>> nodes;
+
+    private static  ArrayList<ArrayList<String>> map;
+    public static void visualize(ArrayList<ArrayList<String>> newmap) {
+        map = newmap;
+        graph = new mxGraph() {
             @Override
             public boolean isCellConnectable(Object cell) {
                 return false;
             }
         };
-        Object parent = graph.getDefaultParent();
+        parent = graph.getDefaultParent();
         graph.getModel().beginUpdate();
         mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
         layout.setOrientation(7);
@@ -25,8 +33,8 @@ public class GraphFrame extends JFrame {
         graph.setAllowDanglingEdges(false);
         //graph.setCellsMovable(false);
         graph.setCellsSelectable(false);
-        ArrayList<ArrayList<Object>> vertices = new ArrayList<ArrayList<Object>>();
-        ArrayList<ArrayList<NODE>> nodes = new ArrayList<ArrayList<NODE>>();
+        vertices = new ArrayList<>();
+        nodes = new ArrayList<>();
         try {
             for (int x=0;x<map.size();x++) {
                 vertices.add(new ArrayList<Object>());
@@ -37,26 +45,8 @@ public class GraphFrame extends JFrame {
                     nodes.get(x).add((NODE) n);
                 }
             }
-            for (int x=0;x<map.size();x++) {
-                System.out.println(x);
-                for (int y=0;y<map.get(x).size();y++) {
-                    ArrayList<Integer> children = new ArrayList<Integer>();
-                    if (nodes.get(x).get(y).type== NODETYPE.BASIC) {continue;}
-                    else if (nodes.get(x).get(y).type == NODETYPE.SET) {children = ((SET) nodes.get(x).get(y)).getChildNodes();}
-                    else if (nodes.get(x).get(y).type == NODETYPE.SUBPATH) {children = ((SUBPATH) nodes.get(x).get(y)).getChildNodes();}
-                    else {continue;}
-                    for (int c = 0; c < children.size(); c++) {
-                        String name = NODE.database.getKeyByIndex(children.get(c));
-                        for (int x1=0;x1<map.size();x1++) {
-                            for (int y1=0;y1<map.get(x1).size();y1++) {
-                                if (map.get(x1).get(y1).equals(name)) {
-                                    graph.insertEdge(parent,null,"",vertices.get(x).get(y),vertices.get(x1).get(y1));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            link();
+            /**/
         } finally {
             layout.execute(parent);
             graph.getModel().endUpdate();
@@ -67,5 +57,57 @@ public class GraphFrame extends JFrame {
         frame.add(graphComponent);
         frame.pack();
         frame.setVisible(true);
+    }
+    private static void link() {
+        recursiveConnect(dephtmap.getMaxDephtStart(),null);
+    }
+    private static void link_once(Object from, Object to) {
+        graph.insertEdge(parent,null,"",from,to);
+    }
+    private static void link_once(NODE from, NODE to) {
+        //System.out.println("Connected " + from.getName() + " to " + to.getName());
+        link_once(getVertex(from),getVertex(to));
+    }
+    private static Object getVertex(NODE n) {
+        if (n == null) {return null;}
+        for (int x = 0; x < map.size();x++) {
+            for (int y=0;y<map.get(x).size(); y++) {
+                if (map.get(x).get(y).equals(n.getName())) {
+                    System.out.println(" " + x + " " + y);
+                    return vertices.get(x).get(y);
+                }
+            }
+        }
+        return null;
+    }
+    private static void recursiveConnect(NODE current, NODE linkTo) {
+        System.out.print("Connect_rec: " + current.getName());
+        if (linkTo != null) {
+            System.out.println(" to " + linkTo.getName());
+        } else {System.out.println("");}
+        if (current.type == NODETYPE.BASIC) {
+            link_once(current,linkTo);
+        }
+        if (current.type == NODETYPE.SET) {
+            ArrayList<Integer> children = ((SET) current).getChildNodes();
+            for (Integer child : children) {
+                link_once(current,(NODE) NODE.database.getElement(child));
+                recursiveConnect((NODE) NODE.database.getElement(child),linkTo);
+            }
+        }
+        if (current.type == NODETYPE.SUBPATH) {
+            ArrayList<Integer> children = ((SUBPATH) current).getChildNodes();
+            ArrayList<NODE> node_children = new ArrayList<>();
+            children.forEach((e)->node_children.add((NODE) NODE.database.getElement(e)));
+            Collections.reverse(node_children);
+            link_once(current,node_children.get(0));
+            for (int i=0;i<node_children.size();i++) {
+                if (i == node_children.size()-1) {
+                    recursiveConnect(node_children.get(i),linkTo);
+                } else {
+                    recursiveConnect(node_children.get(i),node_children.get(i+1));
+                }
+            }
+        }
     }
 }

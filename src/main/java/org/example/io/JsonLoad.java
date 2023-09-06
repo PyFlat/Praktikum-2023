@@ -41,7 +41,12 @@ public class JsonLoad {
 
             int type = e.getInt("type");
             TYPES[] tl = new TYPES[] {TYPES.NORMAL,TYPES.RANDOM};
-            new SUBPATH(name,names,probs,capc,tl[type]);
+            SUBPATH p = new  SUBPATH(name,names,probs,capc,tl[type]);
+            int _i=0;
+            while (p.getIndex() == -1) {
+                p = new  SUBPATH(name + "(" + _i + ")",names,probs,capc,tl[type]);
+                _i += 1;
+            }
         }
     }
     private static void parseSets(JSONArray st) {
@@ -53,7 +58,13 @@ public class JsonLoad {
             ArrayList<String> names = new ArrayList<String>();
             _names.forEach((s)->names.add((String) s));
             PRIORITY[] pts = new PRIORITY[] {PRIORITY.CLOSEST, PRIORITY.FURTHEST, PRIORITY.SHORTEST_WAIT, PRIORITY.SHORTEST_CLOSEST_WAIT, PRIORITY.RANDOM, PRIORITY.RANDOM_EMPTY, PRIORITY.LOWEST_FREQ};
-            new SET(name,pts[priority],names);
+            //new SET(name,pts[priority],names);
+            SET p = new  SET(name,pts[priority],names);
+            int _i=0;
+            while (p.getIndex() == -1) {
+                p = new  SET(name,pts[priority],names);
+                _i += 1;
+            }
         }
     }
 }

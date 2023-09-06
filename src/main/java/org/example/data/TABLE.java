@@ -6,6 +6,7 @@ public class TABLE {
     private ArrayList<NODE_LIKE> elements = new ArrayList<NODE_LIKE>();
     private ArrayList<String> names = new ArrayList<String>();
     public int addElement(NODE_LIKE element, String name){
+        System.out.println("Added element with name: " + name);
         if (this.names.contains(name)) {
            return -1;
         }

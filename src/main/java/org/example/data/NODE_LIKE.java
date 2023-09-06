@@ -5,6 +5,6 @@ public interface NODE_LIKE {
     void cleanup();
     int calculateLength();
     int getLength();
-
+    int getIndex();
     String getName();
 }

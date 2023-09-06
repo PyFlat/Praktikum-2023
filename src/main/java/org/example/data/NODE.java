@@ -27,4 +27,8 @@ public class NODE implements NODE_LIKE{
     public String getName() {
         return NODE.database.getKeyByIndex(this.index);
     }
+
+    public int getIndex() {
+        return index;
+    }
 }

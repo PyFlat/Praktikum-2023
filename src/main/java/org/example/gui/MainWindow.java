@@ -30,7 +30,7 @@ public class MainWindow extends JFrame {
         this.b.paint(g2d);
         this.c.paint(g2d);
     }
-    public static void main(String[] args) throws Exception {
+    public static void _main(String[] args) throws Exception {
 
         SwingUtilities.invokeLater(() -> new MainWindow().setVisible(true));
     }
