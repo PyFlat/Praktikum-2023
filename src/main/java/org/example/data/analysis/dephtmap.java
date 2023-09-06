@@ -33,16 +33,17 @@ public class dephtmap {
     }
     private static int placeBranch(ArrayList<ArrayList<String>>  map, int cidx, NODE next) {
         System.out.println("Entered branch with: " +cidx + " " + next.getName());
+        map.get(cidx).add(next.getName());
         if (next.type == NODETYPE.BASIC) {
-            map.get(cidx).add(next.getName());
+
             return cidx;
         } else if (next.type == NODETYPE.SUBPATH) {
-            map.get(cidx).add(next.getName());
+            //map.get(cidx).add(next.getName());
             for (int i=((SUBPATH) next).getChildNodes().size()-1;i>-1 ;i--) {
                 cidx = placeBranch(map, cidx+1,(NODE) NODE.database.getElement(((SUBPATH) next).getChildNodes().get(i)));
             }
         } else if (next.type == NODETYPE.SET) {
-            map.get(cidx).add(next.getName());
+            //map.get(cidx).add(next.getName());
             for (int i=((SET) next).getChildNodes().size()-1;i>-1 ;i--) {
                 placeBranch(map, cidx+1,(NODE) NODE.database.getElement(((SET) next).getChildNodes().get(i)));
             }
