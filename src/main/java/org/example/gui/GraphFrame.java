@@ -1,7 +1,7 @@
 package org.example.gui;
 
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
-import com.mxgraph.layout.mxCompactTreeLayout;
+//import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 import org.example.data.*;
@@ -14,7 +14,6 @@ public class GraphFrame extends JFrame {
     private static Object parent;
     private static mxGraph graph;
     private static ArrayList<ArrayList<Object>> vertices;
-    private static ArrayList<ArrayList<NODE>> nodes;
 
     private static  ArrayList<ArrayList<String>> map;
     public static void visualize(ArrayList<ArrayList<String>> newmap) {
@@ -35,11 +34,11 @@ public class GraphFrame extends JFrame {
         //graph.setCellsMovable(false);
         graph.setCellsSelectable(false);
         vertices = new ArrayList<>();
-        nodes = new ArrayList<>();
+        ArrayList<ArrayList<NODE>> nodes = new ArrayList<>();
         try {
             for (int x=0;x<map.size();x++) {
-                vertices.add(new ArrayList<Object>());
-                nodes.add(new ArrayList<NODE>());
+                vertices.add(new ArrayList<>());
+                nodes.add(new ArrayList<>());
                 for (int y=0;y<map.get(x).size();y++) {
                     vertices.get(x).add(graph.insertVertex(parent, null, map.get(x).get(y),x*100+(x-1)*100+100,y*50+(y-1)*30+30,100,50));
                     NODE_LIKE n = NODE.database.getElementByKey(map.get(x).get(y));
@@ -53,7 +52,8 @@ public class GraphFrame extends JFrame {
             graph.getModel().endUpdate();
         }
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
-
+        graphComponent.setZoomFactor(10);
+        graphComponent.zoomOut();
         GraphFrame frame = new GraphFrame();
         frame.add(graphComponent);
         frame.pack();
@@ -116,7 +116,7 @@ public class GraphFrame extends JFrame {
         }
         if (current.type == NODETYPE.SET) {
             System.out.println("Added set " + current.getName());
-            destinations.add(cidx+((SET) current).getLength());
+            destinations.add(cidx+ current.getLength());
             ArrayList<Integer> children = ((SET) current).getChildNodes();
             Collections.reverse(children);
             //System.out.println("Children of " + current.getName() + ": " + Arrays.toString(children.toArray()));
@@ -126,50 +126,10 @@ public class GraphFrame extends JFrame {
             }
             destinations.remove(destinations.size()-1);
             System.out.println("Left set " + current.getName());
-            cidx += ((SET) current).getLength()-1;
+            cidx += current.getLength()-1;
             return cidx;
         }
         return 0;
     }
-    private static int recursiveConnect(NODE current, NODE linkTo, int cidx, int indexTo) {
-        System.out.print("Connect_rec: " + current.getName() + " " + cidx);
-        if (linkTo != null) {
-            System.out.println(" to " + linkTo.getName());
-        } else {System.out.println("");}
-        if (current.type == NODETYPE.BASIC) {
-            if (indexTo == -1) {
-                link_once(current,linkTo,cidx,1);
-                return cidx;
-            }
-            link_once(current,linkTo,cidx,indexTo-cidx);
-            return cidx;
-        }
-        if (current.type == NODETYPE.SET) {
-            ArrayList<Integer> children = ((SET) current).getChildNodes();
-            for (Integer child : children) {
-                link_once(current,(NODE) NODE.database.getElement(child),cidx,1);
-                recursiveConnect((NODE) NODE.database.getElement(child),linkTo, cidx + 1, cidx+((SET) current).getLength());
-            }
-            cidx += ((SET) current).getLength()-1;
-            return cidx;
-        }
-        if (current.type == NODETYPE.SUBPATH) {
-            ArrayList<Integer> children = ((SUBPATH) current).getChildNodes();
-            ArrayList<NODE> node_children = new ArrayList<>();
-            children.forEach((e)->node_children.add((NODE) NODE.database.getElement(e)));
-            Collections.reverse(node_children);
-            link_once(current,node_children.get(0),cidx,1);
-            for (int i=0;i<node_children.size();i++) {
-                if (i == node_children.size()-1) {
-                    if (indexTo == -1) { recursiveConnect(node_children.get(i),linkTo,cidx+1, cidx+1);}
-                    else {
-                        cidx = recursiveConnect(node_children.get(i), linkTo, cidx + 1, indexTo);
-                    }
-                } else {
-                    cidx = recursiveConnect(node_children.get(i),node_children.get(i+1),cidx+1, -1);
-                }
-            }
-        }
-        return 0;
-    }
+
 }
