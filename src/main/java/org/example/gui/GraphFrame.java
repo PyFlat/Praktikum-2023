@@ -52,7 +52,7 @@ public class GraphFrame extends JFrame {
             graph.getModel().endUpdate();
         }
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
-        graphComponent.setZoomFactor(10);
+        graphComponent.setZoomFactor(5);
         graphComponent.zoomOut();
         GraphFrame frame = new GraphFrame();
         frame.add(graphComponent);
