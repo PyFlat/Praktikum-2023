@@ -1,12 +1,8 @@
 package org.example.gui;
 
-import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
-import com.mxgraph.model.mxCell;
-import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
-import com.mxgraph.swing.handler.mxConnectionHandler;
 import org.example.data.*;
 
 import javax.swing.*;
@@ -14,7 +10,12 @@ import java.util.ArrayList;
 
 public class GraphFrame extends JFrame {
     public static void visualize(ArrayList<ArrayList<String>> map) {
-        mxGraph graph = new mxGraph();
+        mxGraph graph = new mxGraph() {
+            @Override
+            public boolean isCellConnectable(Object cell) {
+                return false;
+            }
+        };
         Object parent = graph.getDefaultParent();
         graph.getModel().beginUpdate();
         mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
