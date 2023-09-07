@@ -9,7 +9,7 @@
     },
     {
       "name": "Teilpfad-1",
-      "names": ["Aufzug-0","Regale-top","Aufzug-0"],
+      "names": ["Aufzug-0","Teilpfad-2","Aufzug-0"],
       "probs": [1.0,1.0,1.0],
       "capacity": [-1,-1,-1],
       "type": 0

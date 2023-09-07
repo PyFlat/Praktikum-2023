@@ -63,7 +63,7 @@ public class GraphFrame extends JFrame {
     private static void link() {
         ArrayList<Integer> a = new ArrayList<>();
         //a.add(map.size()-1);
-        recurseiveConnect2(depthMap.getMaxDepthStart(),null,0,a);
+        recurseiveConnect2(depthMap.getMaxDepthStart(),null,0,a, false);
     }
     private static void link_once(Object from, Object to) {
         graph.insertEdge(parent,null,"",from,to);
@@ -84,10 +84,14 @@ public class GraphFrame extends JFrame {
         }
         return null;
     }
-    private static int recurseiveConnect2(Node_abstract current, Node_abstract linkTo, int cidx, ArrayList<Integer> destinations) {
+    private static int recurseiveConnect2(Node_abstract current, Node_abstract linkTo, int cidx, ArrayList<Integer> destinations, boolean destinationOverride) {
         System.out.println("Called " +cidx+ " " + current.getName());
         //System.out.println(Arrays.toString(destinations.toArray()));
         if (current.type == NODETYPE.BASIC) {
+            if (destinationOverride) {
+                link_once(current, linkTo, cidx, 1);
+                return cidx;
+            }
             if (destinations.size()>0) {
                 if (getVertex(linkTo, destinations.get(destinations.size()-1)) != null) {
                     link_once(current, linkTo, cidx, destinations.get(destinations.size()-1)-cidx);
@@ -113,11 +117,11 @@ public class GraphFrame extends JFrame {
             link_once(current,node_children.get(0),cidx,1);
             for (int i=0;i<node_children.size();i++) {
                 if (i == node_children.size()-1) {
-                    cidx = recurseiveConnect2(node_children.get(i),linkTo,cidx+1, destinations);
+                    cidx = recurseiveConnect2(node_children.get(i),linkTo,cidx+1, destinations, false);
                     return cidx;
                     //System.out.println("Path "+current.getName() +" failed to end");
                 } else {
-                    cidx = recurseiveConnect2(node_children.get(i),node_children.get(i+1),cidx+1, destinations);
+                    cidx = recurseiveConnect2(node_children.get(i),node_children.get(i+1),cidx+1, destinations, true);
                 }
             }
         }
@@ -129,7 +133,7 @@ public class GraphFrame extends JFrame {
             //System.out.println("Children of " + current.getName() + ": " + Arrays.toString(children.toArray()));
             for (Integer child : children) {
                 link_once(current, Database.t.getElement(child), cidx,1);
-                recurseiveConnect2(Database.t.getElement(child),linkTo, cidx + 1, destinations);
+                recurseiveConnect2(Database.t.getElement(child),linkTo, cidx + 1, destinations, false);
             }
             destinations.remove(destinations.size()-1);
             System.out.println("Left set " + current.getName());
