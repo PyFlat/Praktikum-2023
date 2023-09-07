@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.data.*;
+import org.example.data_2.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,9 +9,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.example.data.analysis.dephtmap;
+import org.example.data_2.analysis.depthMap;
 import org.example.gui.GraphFrame;
-import org.example.io.JsonLoad;
+import org.example.io_2.JsonLoad;
 public class Main {
     public static void main(String[] args) {
         System.out.println("Hello World 2");
@@ -24,11 +24,11 @@ public class Main {
             return;
         }
         System.out.println("Unpack started");
-        NODE.database.unpack_all();
-        NODE.database.debug();
+        Database.t.unpack_all();
+        Database.t.debug();
         System.out.println("Unpack completed");
-        dephtmap.runDephtcalc();
-        ArrayList<ArrayList<String>> blocks = dephtmap.mapHorizontal();
+        depthMap.runDepthCalc();
+        ArrayList<ArrayList<String>> blocks = depthMap.mapHorizontal();
         System.out.println(Arrays.toString(blocks.toArray()));
         GraphFrame.visualize(blocks);
     }
