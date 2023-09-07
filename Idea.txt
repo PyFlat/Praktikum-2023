@@ -1,0 +1,19 @@
+Idea for methods:
+
+Any Nodes has to be either on a set or a subpath
+
+Just store the parent in every node.
+
+Any Nodes on a set are only allowed to have one incoming connections
+
+Any Nodes on a subpath that come after a Node or Subpath, may only have one connection.
+
+Any Nodes coming after a set have an unknown amount of connections
+
+To get the amount of connections after a set , just iterate over the entiere set, and count +1
+if you:
+
+Reach the end of a set (just nodes), count +1
+Reach the end of a subpath, count +1
+(This counter is kept in the set, that needs to be counted.
+
