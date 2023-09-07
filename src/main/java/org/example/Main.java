@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.example.data.analysis.dephtmap;
+import org.example.data.analysis.depthMap;
 import org.example.gui.GraphFrame;
 import org.example.io.JsonLoad;
 public class Main {
@@ -24,11 +24,11 @@ public class Main {
             return;
         }
         System.out.println("Unpack started");
-        NODE.database.unpack_all();
-        NODE.database.debug();
+        Database.t.unpack_all();
+        Database.t.debug();
         System.out.println("Unpack completed");
-        dephtmap.runDephtcalc();
-        ArrayList<ArrayList<String>> blocks = dephtmap.mapHorizontal();
+        depthMap.runDepthCalc();
+        ArrayList<ArrayList<String>> blocks = depthMap.mapHorizontal();
         System.out.println(Arrays.toString(blocks.toArray()));
         GraphFrame.visualize(blocks);
     }

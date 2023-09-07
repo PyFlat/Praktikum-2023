@@ -1,4 +1,4 @@
-package org.example.data_2;
+package org.example.data;
 
 public class Node extends Node_abstract{
 

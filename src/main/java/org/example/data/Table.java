@@ -1,6 +1,7 @@
-package org.example.data_2;
+package org.example.data;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Table {
     private final HashMap<String , Integer> keyMap;
@@ -47,5 +48,12 @@ public class Table {
     }
     public HashMap<Integer , Node_abstract> getNodes() {
         return nodes;
+    }
+
+    public void unpack_all() {
+        for (Map.Entry<Integer , Node_abstract> entry : nodes.entrySet()) {
+            entry.getValue().unpack();
+            entry.getValue().cleanup();
+        }
     }
 }
