@@ -1,14 +1,17 @@
 package org.example.gui;
 
 import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.view.mxGraph;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CustomGraph extends mxGraph {
+    private mxCell connection;
     @Override
     public boolean isCellConnectable(Object cell) {
         return false;
@@ -19,7 +22,6 @@ public class CustomGraph extends mxGraph {
         boolean result = super.isCellFoldable(cell, collapse);
         if(!result)
         {
-            System.out.println(this.getIncomingEdges(cell).length);
             return this.getOutgoingEdges(cell).length > 1;
         }
         return true;
@@ -53,15 +55,27 @@ public class CustomGraph extends mxGraph {
         List<Object> cellsAffected = new ArrayList<>();
         graph.traverse(cellSelected, true, (vertex, edge) -> {
 
-            if(vertex != cellSelected)
+            if(vertex != cellSelected && !Objects.equals(((mxCell) vertex).getId(), "6"))
             {
                 cellsAffected.add(vertex);
             }
 
             return vertex == cellSelected || !graph.isCellCollapsed(vertex);
         });
-
         graph.toggleCells(show, cellsAffected.toArray(), true);
+
+        if (!show) {
+            connection = (mxCell)graph.insertEdge(graph.getDefaultParent(), null, "", ((mxGraphModel) graph.getModel()).getCell("3"), ((mxGraphModel) graph.getModel()).getCell("6"));
+        }
+        else{
+            if (connection != null){
+                graph.getModel().remove(connection);
+                connection = null;
+            }
+        }
+    }
+    public static void main(String[] args){
+        System.out.println("OOPs you executed the wrong file");
     }
 
 }

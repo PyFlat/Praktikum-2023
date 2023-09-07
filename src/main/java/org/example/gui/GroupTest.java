@@ -19,6 +19,8 @@ public class GroupTest {
         graph.setCellsEditable(false);
         graph.setAllowDanglingEdges(false);
         graph.setCellsMovable(false);
+
+
         try {
             mxCell a = (mxCell)graph.insertVertex(parent, null, "test", 0,0,100,50);
 
