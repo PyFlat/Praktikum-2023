@@ -1,10 +1,10 @@
-package org.example.data_2.analysis;
+package org.example.data.analysis;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 
-import org.example.data_2.*;
+import org.example.data.*;
 
 public class depthMap {
     public static void runDepthCalc() {

@@ -3,14 +3,13 @@ import org.example.data.*;
 import org.json.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class JsonLoad {
     public static void loadFromJson(String json) {
         try {
             JSONObject jo = new JSONObject(json);
-            JSONArray spfs = jo.getJSONArray("subpaths");
-            parseSubPaths(spfs);
+            JSONArray subPaths = jo.getJSONArray("subpaths");
+            parseSubPaths(subPaths);
             JSONArray ns = jo.getJSONArray("nodes");
             parseNodes(ns);
             JSONArray st = jo.getJSONArray("sets");
@@ -22,29 +21,29 @@ public class JsonLoad {
 
     }
     private static void parseNodes(JSONArray nd) {
-        nd.forEach((s)->new NODE(s.toString()));
+        nd.forEach((s)->new Node(s.toString()));
     }
     private static void parseSubPaths(JSONArray sp) {
         for (int i=0;i<sp.length();i++) {
             JSONObject e = sp.getJSONObject(i);
             String name = e.getString("name");
             JSONArray nam = e.getJSONArray("names");
-            ArrayList<String> names = new ArrayList<String>();
+            ArrayList<String> names = new ArrayList<>();
             nam.forEach((s)->names.add(s.toString()));
             nam = e.getJSONArray("probs");
-            ArrayList<Float> probs = new ArrayList<Float>();
+            ArrayList<Float> probs = new ArrayList<>();
             nam.forEach((s)->probs.add((((java.math.BigDecimal) s).floatValue())));
 
             nam = e.getJSONArray("capacity");
-            ArrayList<Integer> capc = new ArrayList<Integer>();
-            nam.forEach((s)->capc.add((int) s));
+            ArrayList<Integer> capacity = new ArrayList<>();
+            nam.forEach((s)->capacity.add((int) s));
 
             int type = e.getInt("type");
             TYPES[] tl = new TYPES[] {TYPES.NORMAL,TYPES.RANDOM};
-            SUBPATH p = new  SUBPATH(name,names,probs,capc,tl[type]);
+            SubPath p = new  SubPath(name,names,probs,capacity,tl[type]);
             int _i=0;
             while (p.getIndex() == -1) {
-                p = new  SUBPATH(name + "(" + _i + ")",names,probs,capc,tl[type]);
+                p = new  SubPath(name + "(" + _i + ")",names,probs,capacity,tl[type]);
                 _i += 1;
             }
         }
@@ -55,15 +54,13 @@ public class JsonLoad {
             String name = e.getString("name");
             int priority = e.getInt("priority");
             JSONArray _names = e.getJSONArray("names");
-            ArrayList<String> names = new ArrayList<String>();
+            ArrayList<String> names = new ArrayList<>();
             _names.forEach((s)->names.add((String) s));
             PRIORITY[] pts = new PRIORITY[] {PRIORITY.CLOSEST, PRIORITY.FURTHEST, PRIORITY.SHORTEST_WAIT, PRIORITY.SHORTEST_CLOSEST_WAIT, PRIORITY.RANDOM, PRIORITY.RANDOM_EMPTY, PRIORITY.LOWEST_FREQ};
             //new SET(name,pts[priority],names);
-            SET p = new  SET(name,pts[priority],names);
-            int _i=0;
+            Set p = new  Set(name,pts[priority],names);
             while (p.getIndex() == -1) {
-                p = new  SET(name,pts[priority],names);
-                _i += 1;
+                p = new  Set(name,pts[priority],names);
             }
         }
     }

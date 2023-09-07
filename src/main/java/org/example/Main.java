@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.data_2.*;
+import org.example.data.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,9 +9,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.example.data_2.analysis.depthMap;
+import org.example.data.analysis.depthMap;
 import org.example.gui.GraphFrame;
-import org.example.io_2.JsonLoad;
+import org.example.io.JsonLoad;
 public class Main {
     public static void main(String[] args) {
         System.out.println("Hello World 2");

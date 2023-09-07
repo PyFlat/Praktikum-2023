@@ -4,8 +4,8 @@ import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 //import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
-import org.example.data_2.*;
-import org.example.data_2.analysis.depthMap;
+import org.example.data.*;
+import org.example.data.analysis.depthMap;
 
 import javax.swing.*;
 import java.util.*;
