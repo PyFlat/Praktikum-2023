@@ -2,6 +2,7 @@ package org.example.gui;
 
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 //import com.mxgraph.layout.mxCompactTreeLayout;
+import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 import org.example.data.*;
@@ -16,6 +17,11 @@ public class GraphFrame extends JFrame {
     private static ArrayList<ArrayList<Object>> vertices;
 
     private static  ArrayList<ArrayList<String>> map;
+
+    private static ArrayList<ArrayList<Node_abstract>> nodes;
+
+
+    private static ArrayList<ArrayList<Integer>> acceptMultipleInputs;
     public static void visualize(ArrayList<ArrayList<String>> newmap) {
         map = newmap;
         graph = new mxGraph() {
@@ -34,15 +40,18 @@ public class GraphFrame extends JFrame {
         //graph.setCellsMovable(false);
         graph.setCellsSelectable(false);
         vertices = new ArrayList<>();
-        ArrayList<ArrayList<Node_abstract>> nodes = new ArrayList<>();
+        nodes = new ArrayList<>();
+        acceptMultipleInputs = new ArrayList<>();
         try {
             for (int x=0;x<map.size();x++) {
                 vertices.add(new ArrayList<>());
                 nodes.add(new ArrayList<>());
+                acceptMultipleInputs.add(new ArrayList<>());
                 for (int y=0;y<map.get(x).size();y++) {
                     vertices.get(x).add(graph.insertVertex(parent, null, map.get(x).get(y),x*100+(x-1)*100+100,y*50+(y-1)*30+30,100,50));
                     Node_abstract n = Database.t.getElementByKey(map.get(x).get(y));
                     nodes.get(x).add((Node_abstract) n);
+                    acceptMultipleInputs.get(x).add(1);
                 }
             }
             link();
@@ -70,16 +79,34 @@ public class GraphFrame extends JFrame {
     }
     private static void link_once(Node_abstract from, Node_abstract to, int cidx, int delta) {
         //System.out.println("Connected " + from.getName() + " to " + to.getName());
-        link_once(getVertex(from, cidx),getVertex(to, cidx+delta));
+        link_once(getVertex(from, cidx,false),getVertex(to, cidx+delta, true));
     }
-    private static Object getVertex(Node_abstract n, int cidx) {
+    private static Object getVertex(Node_abstract n, int cidx, boolean to) {
         if (n == null) {return null;}
         for (int x = 0; x < map.size();x++) {
             for (int y=0;y<map.get(x).size(); y++) {
-                if (map.get(x).get(y).equals(n.getName()) && x == cidx) {
-                    //System.out.println(" " + x + " " + y);
-                    return vertices.get(x).get(y);
+                //System.out.println(""+ x + " "+ y + " " + graph.getIncomingEdges(vertices.get(x).get(y)).length);
+                if (map.get(x).get(y).equals(n.getName()) && x == cidx) { //Muss gelten für alles
+                    if (to) {
+                        if (graph.getIncomingEdges(vertices.get(x).get(y)).length < acceptMultipleInputs.get(x).get(y)) {
+                            //System.out.println("Created " + x + " " + y);
+                            return vertices.get(x).get(y);
+                        }
+                    } else {
+                        mxCell vertex = (mxCell) vertices.get(x).get(y);
+                        Node_abstract node = nodes.get(x).get(y);
+                        int limit = 1;
+                        if (node.type == NODETYPE.SET) {
+                            limit = ((advancedNode)node).getChildNodes().size();
+                        }
+                        System.out.println("Node: "+node.getName());
+                        if (graph.getOutgoingEdges(vertex).length< limit) {
+                            return vertices.get(x).get(y);
+                        }
+
+                    }
                 }
+
             }
         }
         return null;
@@ -93,14 +120,14 @@ public class GraphFrame extends JFrame {
                 return cidx;
             }
             if (destinations.size()>0) {
-                if (getVertex(linkTo, destinations.get(destinations.size()-1)) != null) {
+                if (getVertex(linkTo, destinations.get(destinations.size()-1), true) != null) {
                     link_once(current, linkTo, cidx, destinations.get(destinations.size()-1)-cidx);
                     return cidx;
                 }
             }
 
             for (int destination: destinations) {
-                if (getVertex(linkTo, destination)!=null) {
+                if (getVertex(linkTo, destination, true)!=null) {
                     link_once(current, linkTo, cidx, destination-cidx);
                     return cidx;
                 }
