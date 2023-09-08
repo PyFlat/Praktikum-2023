@@ -1,0 +1,50 @@
+{
+  "subpaths": [
+    {
+      "name": "Pfad-0",
+      "names": ["Quelle-0","test","test","test","test","Teilpfad-2"],
+      "probs": [1.0,1.0,1.0],
+      "capacity": [-1,-1,-1],
+      "type": 0
+    },
+    {
+      "name": "Teilpfad-1",
+      "names": ["Aufzug-0","Regale-top","Aufzug-0"],
+      "probs": [1.0,1.0,1.0],
+      "capacity": [-1,-1,-1],
+      "type": 0
+    },
+    {
+      "name": "Teilpfad-2",
+      "names": ["Kassen","Ziel-0"],
+      "probs": [1.0,1.0],
+      "capacity": [-1,-1],
+      "type": 0
+    }
+  ],
+  "nodes": [
+    "Quelle-0", "Ziel-0", "Ziel-1", "Ziel-2", "Ziel-3", "Ziel-4", "Ziel-5", "Ziel-6", "Ziel-7", "Ziel-8", "Ziel-9", "Ziel-12", "Ziel-13", "Warteschlange-0", "Warteschlange-1", "Warteschlange-2", "Aufzug-0"
+  ],
+  "sets": [
+    {
+      "name": "test",
+      "priority": 4,
+      "names": ["Regale bottom", "Teilpfad-1"]
+    },
+    {
+      "name": "Regale bottom",
+      "priority": 4,
+      "names": ["Ziel-2", "Ziel-3", "Ziel-5", "Ziel-6", "Ziel-7","Regale-top"]
+    },
+    {
+      "name": "Regale-top",
+      "priority": 4,
+      "names": ["Ziel-1", "Ziel-4", "Ziel-8", "Ziel-9", "Ziel-12", "Ziel-13","Teilpfad-2"]
+    },
+    {
+      "name": "Kassen",
+      "priority": 2,
+      "names": ["Warteschlange-0", "Warteschlange-1", "Warteschlange-2"]
+    }
+  ]
+}

@@ -15,7 +15,7 @@ import org.example.io.JsonLoad;
 public class Main {
     public static void main(String[] args) {
         System.out.println("Hello World 2");
-        File file = new File("src/main/java/org/example/xy.json");
+        File file = new File("src/main/java/org/example/xyz.json");
         try {
             String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
             JsonLoad.loadFromJson(content);
