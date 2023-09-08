@@ -62,7 +62,7 @@ public class GraphFrame extends JFrame {
             link();
             /**/
         } finally {
-            //layout.execute(parent);
+            layout.execute(parent);
             graph.getModel().endUpdate();
         }
         mxGraphComponent graphComponent = new mxGraphComponent(graph);

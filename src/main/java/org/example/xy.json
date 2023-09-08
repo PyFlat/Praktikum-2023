@@ -9,7 +9,7 @@
     },
     {
       "name": "PC",
-      "names": ["ND","NE","NC"],
+      "names": ["ND","NE","NE"],
       "probs": [1.0,1.0,1.0],
       "capacity": [-1,-1,-1],
       "type": 0
@@ -29,7 +29,7 @@
     {
       "name": "SA",
       "priority": 4,
-      "names": ["PB", "PC"]
+      "names": ["PC", "PC"]
     },
     {
       "name": "SB",
