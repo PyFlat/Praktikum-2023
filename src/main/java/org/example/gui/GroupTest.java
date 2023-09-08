@@ -45,10 +45,10 @@ public class GroupTest {
 
             graph.insertEdge(parent, null, "", a, b);
         } finally {
-            //layout.execute(parent);
+            layout.execute(parent);
             graph.getModel().endUpdate();
         }
-        graph.addListener(mxEvent.FOLD_CELLS, (sender, evt) -> layout.execute(graph.getDefaultParent()));
+
 
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
         graphComponent.setCenterZoom(true);
