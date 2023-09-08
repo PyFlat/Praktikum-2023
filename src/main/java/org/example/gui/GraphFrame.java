@@ -67,14 +67,14 @@ public class GraphFrame extends JFrame {
             link();
             /**/
         } finally {
-            layout.execute(parent);
+            //layout.execute(parent);
             graph.getModel().endUpdate();
         }
-        graph.addListener(mxEvent.FOLD_CELLS, (sender, evt) -> {
+        /*graph.addListener(mxEvent.FOLD_CELLS, (sender, evt) -> {
             try {
                 layout.execute(graph.getDefaultParent());
             } catch (StackOverflowError e) {System.out.println("WARNING! LAYOUT DISABLED BECAUSE OF OVERFLOW! REDUCE COMPLEXITY!");}
-        });
+        });*/
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
         graphComponent.addMouseWheelListener(new CustomMouseWheelListener(graphComponent));
         //graphComponent.setZoomFactor(1);

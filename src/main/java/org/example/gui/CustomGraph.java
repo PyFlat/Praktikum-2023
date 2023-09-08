@@ -10,10 +10,7 @@ import org.example.data.Node;
 import org.example.data.Node_abstract;
 import org.example.data.analysis.depthMap;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class CustomGraph extends mxGraph {
     private HashMap<Object , Object> connections = new HashMap<>(); // <from , to>
@@ -78,10 +75,12 @@ public class CustomGraph extends mxGraph {
         Node_abstract parent = findNode(cellSelected);
         int parent_x = findCoords(cellSelected)[0];
         ArrayList<mxCell> goal  = new ArrayList<>();
+
         graph.traverse(cellSelected, true, (vertex, edge) -> {
-            System.out.println(vertex);
+
+            //System.out.println(vertex);
             int[] c = findCoords(vertex);
-            if (c[0] >= parent_x+parent.getLength()) {
+            if (c[0] >= parent_x+parent.getLength()) { //TODO is broken, graph cannot find correct endpoint. Write own traversal algorithm
                 goal.add((mxCell) vertex);
                 return true;
             }
@@ -89,21 +88,28 @@ public class CustomGraph extends mxGraph {
             {
                 cellsAffected.add(vertex);
             }
-            System.out.println("Called strange return");
+            //System.out.println("Called strange return");
             return vertex == cellSelected || !graph.isCellCollapsed(vertex);
         });
-        System.out.println(goal.get(0));
-        graph.toggleCells(show, cellsAffected.toArray(), true);
+        System.out.println(Arrays.toString(goal.toArray()));
+        try {
+            System.out.println(goal.get(0));
+            graph.toggleCells(show, cellsAffected.toArray(), true);
 
-        if (!show) {
-            if (!connections.containsKey(cellSelected)) {
-                connections.put(cellSelected,graph.insertEdge(graph.getDefaultParent(), null, "", cellSelected, goal.get(0)));
+            if (!show) {
+                if (!connections.containsKey(cellSelected)) {
+                    connections.put(cellSelected, graph.insertEdge(graph.getDefaultParent(), null, "???", cellSelected, goal.get(0)));
+                    System.out.println(Arrays.toString(graph.getOutgoingEdges(cellSelected)));
+                    graph.repaint();
+                }
+            } else {
+                if (connections.containsKey(cellSelected)) {
+                    graph.getModel().remove(connections.get(cellSelected));
+                    connections.remove(cellSelected);
+                }
             }
-        } else {
-            if (connections.containsKey(cellSelected)) {
-                graph.getModel().remove(connections.get(cellSelected));
-                connections.remove(cellSelected);
-            }
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("ERROR, CANNOT FIND GOAL :(");
         }
     }
     public static void main(String[] args){

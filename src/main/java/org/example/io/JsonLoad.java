@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class JsonLoad {
     public static void loadFromJson(String json) {
+
         try {
             JSONObject jo = new JSONObject(json);
             JSONArray subPaths = jo.getJSONArray("subpaths");

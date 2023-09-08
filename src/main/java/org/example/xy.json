@@ -2,7 +2,14 @@
   "subpaths": [
     {
       "name": "PA",
-      "names": ["SA","NG"],
+      "names": ["SA"],
+      "probs": [1.0,1.0,1.0],
+      "capacity": [-1,-1,-1],
+      "type": 0
+    },
+    {
+      "name": "_ROOT",
+      "names": ["PA","_PRG_END"],
       "probs": [1.0,1.0,1.0],
       "capacity": [-1,-1,-1],
       "type": 0
@@ -23,13 +30,13 @@
     }
   ],
   "nodes": [
-    "NA","NB","NC","ND","NE","NF","NG"
+    "NA","NB","NC","ND","NE","NF","NG","_PRG_END"
   ],
   "sets": [
     {
       "name": "SA",
       "priority": 4,
-      "names": ["PC", "PC"]
+      "names": ["NA", "NB"]
     },
     {
       "name": "SB",
