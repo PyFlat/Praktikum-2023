@@ -11,7 +11,7 @@ public class CustomMouseWheelListener implements MouseWheelListener {
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (e.isControlDown() && e.getWheelRotation() < 0 && graphComponent.getGraph().getView().getScale() < 6) {
-            System.out.println(graphComponent.getGraph().getView().getScale());
+            //System.out.println(graphComponent.getGraph().getView().getScale());
             graphComponent.zoomIn();
         } else if (e.isControlDown() && e.getWheelRotation() > 0 && graphComponent.getGraph().getView().getScale() > 0.25) {
             graphComponent.zoomOut();

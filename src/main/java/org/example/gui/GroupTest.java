@@ -41,11 +41,11 @@ public class GroupTest {
 
 
 
-            System.out.println(b.getChildCount());
+            //System.out.println(b.getChildCount());
 
             graph.insertEdge(parent, null, "", a, b);
         } finally {
-            layout.execute(parent);
+            //layout.execute(parent);
             graph.getModel().endUpdate();
         }
         graph.addListener(mxEvent.FOLD_CELLS, (sender, evt) -> layout.execute(graph.getDefaultParent()));
