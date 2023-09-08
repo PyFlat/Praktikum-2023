@@ -14,7 +14,7 @@ import org.example.gui.GraphFrame;
 import org.example.io.JsonLoad;
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello World 2");
+        //System.out.println("Hello World 2");
         File file = new File("src/main/java/org/example/xyz.json");
         try {
             String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
@@ -29,7 +29,7 @@ public class Main {
         System.out.println("Unpack completed");
         depthMap.runDepthCalc();
         ArrayList<ArrayList<String>> blocks = depthMap.mapHorizontal();
-        System.out.println(Arrays.toString(blocks.toArray()));
+        //System.out.println(Arrays.toString(blocks.toArray()));
         GraphFrame.visualize(blocks);
     }
 }

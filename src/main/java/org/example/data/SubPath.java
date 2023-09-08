@@ -21,8 +21,11 @@ public class SubPath extends Node_abstract implements advancedNode{
 
     @Override
     public void unpack() {
+        int i = 0;
         while (!names.isEmpty()) {
             this.childNodes.add(Database.t.getIndexByKey(names.remove(names.size()-1)));
+            Database.t.getElement(this.childNodes.get(childNodes.size()-1)).addPathLoc(this, names.size());
+            i += 1;
         }
     }
 

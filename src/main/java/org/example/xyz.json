@@ -2,7 +2,7 @@
   "subpaths": [
     {
       "name": "Pfad-0",
-      "names": ["Quelle-0","test","test","test","test","Teilpfad-2"],
+      "names": ["Quelle-0","test","Teilpfad-2"],
       "probs": [1.0,1.0,1.0],
       "capacity": [-1,-1,-1],
       "type": 0
