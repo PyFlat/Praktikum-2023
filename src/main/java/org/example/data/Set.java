@@ -42,4 +42,17 @@ public class Set extends Node_abstract implements advancedNode{
     public ArrayList<Integer> getChildNodes() {
         return childNodes;
     }
+
+    @Override
+    public int getOpenEnds() {
+        int ends = 0;
+        for (int i: childNodes) {
+            Node_abstract n = Database.t.getElement(i);
+            if (n.type == NODETYPE.BASIC) ends += 1;
+            else {
+                ends += ((advancedNode) n).getOpenEnds();
+            }
+        }
+        return ends;
+    }
 }

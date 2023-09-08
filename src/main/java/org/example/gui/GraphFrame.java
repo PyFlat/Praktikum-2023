@@ -78,6 +78,11 @@ public class GraphFrame extends JFrame {
         ArrayList<Integer> a = new ArrayList<>();
         //a.add(map.size()-1);
         findParents(depthMap.getMaxDepthStart(), null, 0,0);
+        for (int x = 0; x < map.size();x++) {
+            for (int y = 0; y < map.get(x).size(); y++) {
+                acceptMultipleInputs.get(x).set(y,findMaxConnections(nodes.get(x).get(y),x,y));
+            }
+        }
         recurseiveConnect2(depthMap.getMaxDepthStart(),null,0,a, false);
     }
     private static void link_once(Object from, Object to) {
@@ -117,15 +122,53 @@ public class GraphFrame extends JFrame {
         }
         return null;
     }
+    private static int findMaxConnections(Node_abstract current, int x, int y) {
+        if (parents.get(x).get(y) == null) {return 1;}
+        ArrayList<Integer> children = ((advancedNode) parents.get(x).get(y)).getChildNodes();
+        ArrayList<Node_abstract> nodes = new ArrayList<>();
+        children.forEach((i)->nodes.add(0,Database.t.getElement(i)));
+        if (parents.get(x).get(y).type == NODETYPE.SET) {
+            return 1;
+        }
+        SubPath parent = (SubPath) parents.get(x).get(y);
+        int _x = 0; // TODO allow for parallel branches.
+        for (Node_abstract n : nodes) {
+            if (n == current) {
+                break;
+            }
+            _x += 1;
+        }
+        if (_x == 0) {return 1;}
+        Node_abstract prev = nodes.get(_x-1);
+        if (prev.type == NODETYPE.BASIC) {return 1;}
+        else {
+            return ((advancedNode) prev).getOpenEnds();
+        }
+    }
     private static int[] findParents(Node_abstract current, Node_abstract parent, int x, int y) {
-        System.out.println("Coords: " + x+ ","+y + ":" + current.getName() + ":" + (parent != null ? parent.getName() : "null"));
-        parents.get(x).set(y,parent);
+        //System.out.println("Coords: " + x+ ","+y + ":" + current.getName() + ":" + (parent != null ? parent.getName() : "null"));
+
         if (current.type == NODETYPE.BASIC) {
-            return new int[]{x,y};
+            int i = y;
+            while (parents.get(x).get(y) != null) {
+                y += 1;
+
+            }
+            parents.get(x).set(y,parent);
+            System.out.println("Coords: " + x+ ","+y + ":" + current.getName() + ":" + (parent != null ? parent.getName() : "null"));
+            return new int[]{x,i};
         }
         if (current.type == NODETYPE.SUBPATH) {
+            int i = y;
+            while (parents.get(x).get(y) != null) {
+                y += 1;
+            }
+
+            parents.get(x).set(y,parent);
+            System.out.println("Coords: " + x+ ","+y + ":" + current.getName() + ":" + (parent != null ? parent.getName() : "null"));
+            y = i;
             ArrayList<Node_abstract> children= new ArrayList<>();
-            ((advancedNode) current).getChildNodes().forEach((i)->children.add(Database.t.getElement(i)));
+            ((advancedNode) current).getChildNodes().forEach((j)->children.add(Database.t.getElement(j)));
             Collections.reverse(children);
             for (Node_abstract child : children) {
                  int[] cd = findParents(child,current, x+1, y);
@@ -135,6 +178,13 @@ public class GraphFrame extends JFrame {
             }
         }
         if (current.type == NODETYPE.SET) {
+            int  j= y;
+            while (parents.get(x).get(y) != null) {
+                y += 1;
+            }
+            parents.get(x).set(y,parent);
+            System.out.println("Coords: " + x+ ","+y + ":" + current.getName() + ":" + (parent != null ? parent.getName() : "null"));
+            y = j;
             ArrayList<Node_abstract> children= new ArrayList<>();
             ((advancedNode) current).getChildNodes().forEach((i)->children.add(Database.t.getElement(i)));
             Collections.reverse(children);

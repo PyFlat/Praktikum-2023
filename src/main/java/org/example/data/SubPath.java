@@ -42,4 +42,13 @@ public class SubPath extends Node_abstract implements advancedNode{
     public ArrayList<Integer> getChildNodes() {
         return childNodes;
     }
+
+    @Override
+    public int getOpenEnds() {
+        if (Database.t.getElement(childNodes.get(childNodes.size()-1)).type == NODETYPE.BASIC) {
+            return 1;
+        } else {
+            return ((advancedNode) Database.t.getElement(childNodes.get(childNodes.size()-1))).getOpenEnds();
+        }
+    }
 }

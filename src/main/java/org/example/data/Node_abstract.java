@@ -1,6 +1,8 @@
 package org.example.data;
 
 
+import java.util.HashMap;
+
 public abstract class Node_abstract {
     private final int index;
     protected int length;
