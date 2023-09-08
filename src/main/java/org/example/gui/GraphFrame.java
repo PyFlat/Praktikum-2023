@@ -4,6 +4,7 @@ import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 //import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxEvent;
 import com.mxgraph.view.mxGraph;
 import org.example.data.*;
 import org.example.data.analysis.depthMap;
@@ -15,7 +16,7 @@ import java.util.*;
 
 public class GraphFrame extends JFrame {
     private static Object parent;
-    private static mxGraph graph;
+    private static CustomGraph graph;
     private static ArrayList<ArrayList<Object>> vertices;
 
     private static  ArrayList<ArrayList<String>> map;
@@ -24,15 +25,13 @@ public class GraphFrame extends JFrame {
 
     private static ArrayList<ArrayList<Node_abstract>> parents;
     private static ArrayList<ArrayList<Integer>> acceptMultipleInputs;
+
+    private static ArrayList<ArrayList<Node_abstract>> goals;
+
     public static void visualize(ArrayList<ArrayList<String>> newmap) {
         //System.out.println(Arrays.toString(newmap.toArray()));
         map = newmap;
-        graph = new mxGraph() {
-            @Override
-            public boolean isCellConnectable(Object cell) {
-                return false;
-            }
-        };
+        graph = new CustomGraph();
         parent = graph.getDefaultParent();
         graph.getModel().beginUpdate();
         mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
@@ -61,6 +60,9 @@ public class GraphFrame extends JFrame {
                     parents.get(x).add(null);
                 }
             }
+            graph.map = map;
+            graph.nodes = nodes;
+            graph.vertices = vertices;
             System.out.println("Finished precalc, started linking");
             link();
             /**/
@@ -68,6 +70,11 @@ public class GraphFrame extends JFrame {
             layout.execute(parent);
             graph.getModel().endUpdate();
         }
+        graph.addListener(mxEvent.FOLD_CELLS, (sender, evt) -> {
+            try {
+                layout.execute(graph.getDefaultParent());
+            } catch (StackOverflowError e) {System.out.println("WARNING! LAYOUT DISABLED BECAUSE OF OVERFLOW! REDUCE COMPLEXITY!");}
+        });
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
         graphComponent.addMouseWheelListener(new CustomMouseWheelListener(graphComponent));
         //graphComponent.setZoomFactor(1);
@@ -78,11 +85,16 @@ public class GraphFrame extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
+
+    private static void fillGoals(Node_abstract current, Node_abstract to) {
+
+    }
     private static void link() {
         ArrayList<Integer> a = new ArrayList<>();
         //a.add(map.size()-1);
         System.out.println("Looking for parents");
         findParents(depthMap.getMaxDepthStart(), null, 0,0);
+        graph.parents = parents;
         System.out.println("Found parents, start input calc");
         for (int x = 0; x < map.size();x++) {
             for (int y = 0; y < map.get(x).size(); y++) {
