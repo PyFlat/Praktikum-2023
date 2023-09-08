@@ -5,27 +5,49 @@ import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.view.mxGraph;
+import org.example.data.NODETYPE;
+import org.example.data.Node;
+import org.example.data.Node_abstract;
+import org.example.data.analysis.depthMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 public class CustomGraph extends mxGraph {
-    private mxCell connection;
+    private HashMap<Object , Object> connections = new HashMap<>(); // <from , to>
+
+    public ArrayList<ArrayList<String>> map;
+    public ArrayList<ArrayList<Node_abstract>> nodes;
+    public ArrayList<ArrayList<Object>> vertices;
+
+    public ArrayList<ArrayList<Node_abstract>> parents;
+
     @Override
     public boolean isCellConnectable(Object cell) {
         return false;
     }
+
+    private Node_abstract findNode(Object cell) {
+        int[] d = findCoords(cell);
+        if (d == null) return null;
+        return nodes.get(d[0]).get(d[1]);
+    }
+    private int[] findCoords(Object cell) {
+        for (int x = 0; x < map.size(); x++) {
+            for (int y = 0; y < map.get(x).size(); y++) {
+                if (vertices.get(x).get(y).equals(cell)) {
+                    return new int[]{x,y};
+                }
+            }
+        }
+        return null;
+    }
     @Override
     public boolean isCellFoldable(Object cell, boolean collapse)
     {
-        boolean result = super.isCellFoldable(cell, collapse);
-        if(!result)
-        {
-            return this.getOutgoingEdges(cell).length > 1;
-        }
-        return true;
-
+        return findNode(cell).type != NODETYPE.BASIC && findNode(cell) != depthMap.getMaxDepthStart();
     }
     @Override
     public Object[] foldCells(boolean collapse, boolean recurse, Object[] cells, boolean checkFoldable)
@@ -53,29 +75,39 @@ public class CustomGraph extends mxGraph {
     private void toggleSubtree(mxGraph graph, Object cellSelected, boolean show)
     {
         List<Object> cellsAffected = new ArrayList<>();
+        Node_abstract parent = findNode(cellSelected);
+        int parent_x = findCoords(cellSelected)[0];
+        ArrayList<mxCell> goal  = new ArrayList<>();
         graph.traverse(cellSelected, true, (vertex, edge) -> {
-
-            if(vertex != cellSelected && !Objects.equals(((mxCell) vertex).getId(), "6"))
+            System.out.println(vertex);
+            int[] c = findCoords(vertex);
+            if (c[0] >= parent_x+parent.getLength()) {
+                goal.add((mxCell) vertex);
+                return true;
+            }
+            if(vertex != cellSelected)
             {
                 cellsAffected.add(vertex);
             }
-
+            System.out.println("Called strange return");
             return vertex == cellSelected || !graph.isCellCollapsed(vertex);
         });
+        System.out.println(goal.get(0));
         graph.toggleCells(show, cellsAffected.toArray(), true);
 
         if (!show) {
-            connection = (mxCell)graph.insertEdge(graph.getDefaultParent(), null, "", ((mxGraphModel) graph.getModel()).getCell("3"), ((mxGraphModel) graph.getModel()).getCell("6"));
-        }
-        else{
-            if (connection != null){
-                graph.getModel().remove(connection);
-                connection = null;
+            if (!connections.containsKey(cellSelected)) {
+                connections.put(cellSelected,graph.insertEdge(graph.getDefaultParent(), null, "", cellSelected, goal.get(0)));
+            }
+        } else {
+            if (connections.containsKey(cellSelected)) {
+                graph.getModel().remove(connections.get(cellSelected));
+                connections.remove(cellSelected);
             }
         }
     }
     public static void main(String[] args){
-        System.out.println("OOPs you executed the wrong file");
+        org.example.Main.main(args);
     }
 
 }
