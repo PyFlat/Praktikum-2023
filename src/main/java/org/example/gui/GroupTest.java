@@ -4,8 +4,11 @@ import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxEvent;
+import org.w3c.dom.ls.LSOutput;
 
 import javax.swing.*;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 public class GroupTest {
     private static CustomGraph graph;
@@ -19,7 +22,6 @@ public class GroupTest {
         graph.setCellsEditable(false);
         graph.setAllowDanglingEdges(false);
         graph.setCellsMovable(false);
-
 
         try {
             mxCell a = (mxCell)graph.insertVertex(parent, null, "test", 0,0,100,50);
@@ -51,8 +53,9 @@ public class GroupTest {
 
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
         graphComponent.setCenterZoom(true);
-        CustomMouseWheelListener mouseWheelListen = new CustomMouseWheelListener(graphComponent);
-        graphComponent.addMouseWheelListener(mouseWheelListen);
+        //CustomMouseWheelListener mouseWheelListen = new CustomMouseWheelListener(graphComponent);
+
+        graphComponent.addMouseWheelListener(e -> {if (e.isControlDown())graphComponent.zoom(e.getWheelRotation() > 0 ? 0.9:1.1);});
         GraphFrame frame = new GraphFrame();
         frame.add(graphComponent);
         frame.pack();

@@ -9,6 +9,8 @@ import org.example.data.*;
 import org.example.data.analysis.depthMap;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.*;
 
 public class GraphFrame extends JFrame {
@@ -20,7 +22,7 @@ public class GraphFrame extends JFrame {
 
     private static ArrayList<ArrayList<Node_abstract>> nodes;
 
-
+    private static ArrayList<ArrayList<Node_abstract>> parents;
     private static ArrayList<ArrayList<Integer>> acceptMultipleInputs;
     public static void visualize(ArrayList<ArrayList<String>> newmap) {
         map = newmap;
@@ -42,22 +44,25 @@ public class GraphFrame extends JFrame {
         vertices = new ArrayList<>();
         nodes = new ArrayList<>();
         acceptMultipleInputs = new ArrayList<>();
+        parents = new ArrayList<>();
         try {
             for (int x=0;x<map.size();x++) {
                 vertices.add(new ArrayList<>());
                 nodes.add(new ArrayList<>());
                 acceptMultipleInputs.add(new ArrayList<>());
+                parents.add(new ArrayList<>());
                 for (int y=0;y<map.get(x).size();y++) {
                     vertices.get(x).add(graph.insertVertex(parent, null, map.get(x).get(y),x*100+(x-1)*100+100,y*50+(y-1)*30+30,100,50));
                     Node_abstract n = Database.t.getElementByKey(map.get(x).get(y));
                     nodes.get(x).add((Node_abstract) n);
                     acceptMultipleInputs.get(x).add(1);
+                    parents.get(x).add(null);
                 }
             }
             link();
             /**/
         } finally {
-            layout.execute(parent);
+            //layout.execute(parent);
             graph.getModel().endUpdate();
         }
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
@@ -72,6 +77,7 @@ public class GraphFrame extends JFrame {
     private static void link() {
         ArrayList<Integer> a = new ArrayList<>();
         //a.add(map.size()-1);
+        findParents(depthMap.getMaxDepthStart(), null, 0,0);
         recurseiveConnect2(depthMap.getMaxDepthStart(),null,0,a, false);
     }
     private static void link_once(Object from, Object to) {
@@ -108,6 +114,36 @@ public class GraphFrame extends JFrame {
                 }
 
             }
+        }
+        return null;
+    }
+    private static int[] findParents(Node_abstract current, Node_abstract parent, int x, int y) {
+        System.out.println("Coords: " + x+ ","+y + ":" + current.getName() + ":" + (parent != null ? parent.getName() : "null"));
+        parents.get(x).set(y,parent);
+        if (current.type == NODETYPE.BASIC) {
+            return new int[]{x,y};
+        }
+        if (current.type == NODETYPE.SUBPATH) {
+            ArrayList<Node_abstract> children= new ArrayList<>();
+            ((advancedNode) current).getChildNodes().forEach((i)->children.add(Database.t.getElement(i)));
+            Collections.reverse(children);
+            for (Node_abstract child : children) {
+                 int[] cd = findParents(child,current, x+1, y);
+                 x = cd[0];
+                 y = cd[1];
+                //return new int[]{x,y};
+            }
+        }
+        if (current.type == NODETYPE.SET) {
+            ArrayList<Node_abstract> children= new ArrayList<>();
+            ((advancedNode) current).getChildNodes().forEach((i)->children.add(Database.t.getElement(i)));
+            Collections.reverse(children);
+            int i = 0;
+            for (Node_abstract child : children) {
+                int[] cd = findParents(child,current, x+1, y+i);
+                i += 1;
+            }
+            return new int[]{x+current.getLength()-1,y};
         }
         return null;
     }
