@@ -40,9 +40,7 @@ public class GroupTest {
 
 
 
-            //b.setCollapsed(false);
             System.out.println(b.getChildCount());
-            //graph.repaint();
 
             graph.insertEdge(parent, null, "", a, b);
         } finally {
@@ -50,7 +48,11 @@ public class GroupTest {
             graph.getModel().endUpdate();
         }
         graph.addListener(mxEvent.FOLD_CELLS, (sender, evt) -> layout.execute(graph.getDefaultParent()));
+
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
+        graphComponent.setCenterZoom(true);
+        CustomMouseWheelListener mouseWheelListen = new CustomMouseWheelListener(graphComponent);
+        graphComponent.addMouseWheelListener(mouseWheelListen);
         GraphFrame frame = new GraphFrame();
         frame.add(graphComponent);
         frame.pack();
