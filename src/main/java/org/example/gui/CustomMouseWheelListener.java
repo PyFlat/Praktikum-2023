@@ -6,7 +6,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 public class CustomMouseWheelListener implements MouseWheelListener {
-    private mxGraphComponent graphComponent = null;
+    private final mxGraphComponent graphComponent;
     public CustomMouseWheelListener(mxGraphComponent graphComponent){this.graphComponent=graphComponent;}
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {

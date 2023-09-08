@@ -4,14 +4,9 @@ import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxEvent;
-import com.mxgraph.util.mxPoint;
-import com.mxgraph.view.mxGraphView;
-import org.w3c.dom.ls.LSOutput;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.Arrays;
 
 public class GroupTest {
     private static CustomGraph graph;
