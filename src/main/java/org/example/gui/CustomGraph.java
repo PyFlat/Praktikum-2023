@@ -82,18 +82,24 @@ public class CustomGraph extends mxGraph {
             int[] c = findCoords(vertex);
             if (c[0] >= parent_x+parent.getLength()) { //TODO is broken, graph cannot find correct endpoint. Write own traversal algorithm
                 goal.add((mxCell) vertex);
-                return true;
+                //return false;
             }
-            if(vertex != cellSelected)
+            int[] vc = findCoords(vertex);
+            if (edge != null) {
+                System.out.println("VERTEX: " + vertex + "; EDGE: " + ((mxCell)edge).getSource());
+            }
+
+            if(vertex != cellSelected && !goal.contains(vertex) && (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected))
             {
                 cellsAffected.add(vertex);
             }
             //System.out.println("Called strange return");
-            return vertex == cellSelected || !graph.isCellCollapsed(vertex);
+            return vertex == cellSelected || !graph.isCellCollapsed(vertex) || connections.containsKey(vertex);
+            //return true;
         });
-        System.out.println(Arrays.toString(goal.toArray()));
+        //System.out.println(Arrays.toString(goal.toArray()));
         try {
-            System.out.println(goal.get(0));
+            //System.out.println(goal.get(0));
             graph.toggleCells(show, cellsAffected.toArray(), true);
 
             if (!show) {
