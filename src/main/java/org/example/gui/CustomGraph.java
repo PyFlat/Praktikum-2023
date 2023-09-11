@@ -84,6 +84,7 @@ public class CustomGraph extends mxGraph {
                 goal.add((mxCell) vertex);
                 //return false;
             }
+            boolean hasPassed = false;
             int[] vc = findCoords(vertex);
             if (edge != null) {
                 System.out.println("VERTEX: " + vertex + "; EDGE: " + ((mxCell)edge).getSource());
@@ -92,9 +93,10 @@ public class CustomGraph extends mxGraph {
             if(vertex != cellSelected && !goal.contains(vertex) && (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected))
             {
                 cellsAffected.add(vertex);
+                hasPassed = true;
             }
             //System.out.println("Called strange return");
-            return vertex == cellSelected || !graph.isCellCollapsed(vertex) || connections.containsKey(vertex);
+            return vertex == cellSelected || connections.containsValue(edge) || hasPassed;
             //return true;
         });
         //System.out.println(Arrays.toString(goal.toArray()));
