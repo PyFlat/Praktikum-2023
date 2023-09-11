@@ -80,7 +80,7 @@ public class CustomGraph extends mxGraph {
 
             //System.out.println(vertex);
             int[] c = findCoords(vertex);
-            if (c[0] >= parent_x+parent.getLength()) { //TODO is broken, graph cannot find correct endpoint. Write own traversal algorithm
+            if (c[0] >= parent_x+parent.getLength()) {
                 goal.add((mxCell) vertex);
                 //return false;
             }
@@ -89,7 +89,10 @@ public class CustomGraph extends mxGraph {
             if (edge != null) {
                 System.out.println("VERTEX: " + vertex + "; EDGE: " + ((mxCell)edge).getSource());
             }
-
+            if (edge == null) {return true;}
+            if (((mxCell)edge).getSource().isCollapsed() && ((mxCell)edge).getSource() != cellSelected && !((mxCell)edge).getValue().equals(" ")) {
+                return false;
+            }
             if(vertex != cellSelected && !goal.contains(vertex) /*&& (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected)*/)
             {
                 cellsAffected.add(vertex);
@@ -104,9 +107,9 @@ public class CustomGraph extends mxGraph {
             //System.out.println(goal.get(0));
             graph.toggleCells(show, cellsAffected.toArray(), true);
 
-            if (!show) {
+            if (!show) { //TODO find way to remove hardcoded " "
                 if (!connections.containsKey(cellSelected)) {
-                    connections.put(cellSelected, graph.insertEdge(graph.getDefaultParent(), null, "???", cellSelected, goal.get(0)));
+                    connections.put(cellSelected, graph.insertEdge(graph.getDefaultParent(), null, " ", cellSelected, goal.get(0)));
                     System.out.println(Arrays.toString(graph.getOutgoingEdges(cellSelected)));
                     graph.repaint();
                 }
