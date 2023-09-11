@@ -90,7 +90,7 @@ public class CustomGraph extends mxGraph {
                 System.out.println("VERTEX: " + vertex + "; EDGE: " + ((mxCell)edge).getSource());
             }
 
-            if(vertex != cellSelected && !goal.contains(vertex) && (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected))
+            if(vertex != cellSelected && !goal.contains(vertex) /*&& (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected)*/)
             {
                 cellsAffected.add(vertex);
                 hasPassed = true;
