@@ -1,5 +1,7 @@
 package org.example.gui.events;
 
+import org.example.gui.PropertyDisplayFrame;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -35,16 +37,9 @@ public class PopupListener implements MouseListener {
         }
     }
     private void showPopup(MouseEvent e) {
-        JFrame popupFrame = new JFrame();
-        popupFrame.setSize(200, 200);
+        JFrame popupFrame = new PropertyDisplayFrame();
         popupFrame.setResizable(false);
         popupFrame.setLocation(e.getX(), e.getY());
-        popupFrame.setLayout(new GridLayout(0, 1));
-
-        // Add your strings to the popup frame
-        popupFrame.add(new JLabel("String 1"));
-        popupFrame.add(new JLabel("String 2"));
-        popupFrame.add(new JLabel("String 3"));
 
         popupFrame.setVisible(true);
     }
