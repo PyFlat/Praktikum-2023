@@ -7,9 +7,9 @@ import com.mxgraph.swing.mxGraphComponent;
 
 public class mouseEventProcessor {
     private Object cell_current;
-    private mxGraphComponent g;
+    private final mxGraphComponent g;
 
-    private highlightListener l;
+    private final highlightListener l;
 
     public mouseEventProcessor(highlightListener listener, mxGraphComponent component) {
         this.g = component;
@@ -31,7 +31,7 @@ public class mouseEventProcessor {
                 startHighlight();
             } else if (cell != cell_current){
                 stopHighlight();
-                cell_current = cell;
+                cell_current = null;
             }
         }
 
