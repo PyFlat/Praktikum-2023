@@ -1,5 +1,7 @@
 package org.example;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import org.example.data.Database;
 import org.example.data.analysis.depthMap;
 import org.example.gui.GraphFrame;
@@ -12,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
+        FlatDarkLaf.setup();
         File file = new File("src/main/java/org/example/xyz.json");
         try {
             String content = new String(Files.readAllBytes(Paths.get(file.toURI())));

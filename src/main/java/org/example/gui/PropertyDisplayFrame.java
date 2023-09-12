@@ -6,9 +6,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+import static java.awt.GridBagConstraints.LINE_START;
+
 public class PropertyDisplayFrame extends JFrame {
     private final JPanel panel;
 
+    private int grid_iter = 0;
     public static ArrayList<ArrayList<Node_abstract>> nodes;
 
     public static ArrayList<ArrayList<Object>> vertices;
@@ -34,7 +37,7 @@ public class PropertyDisplayFrame extends JFrame {
     }
     private String capitalize(String s) {return s.toUpperCase().substring(0,1)+s.toLowerCase().substring(1);}
     public PropertyDisplayFrame(int x, int y, Object cell) {
-        setSize(200, 100);
+        setSize(400, 200);
         //setResizable(false);
         setLocation(x,y);
 
@@ -42,22 +45,19 @@ public class PropertyDisplayFrame extends JFrame {
         panel.setLayout(new GridBagLayout());
 
         Node_abstract parent = findNode(cell);
-        addProperty(2,"Name",parent.getName());
-
+        addProperty(parent.type==NODETYPE.SUBPATH ? 4 : 2, "Name", parent.getName());
+        addProperty(parent.type==NODETYPE.SUBPATH ? 4 : 2,"Type",capitalize(parent.type.name()));
         switch (parent.type) {
             case BASIC:
                 break;
             case SET:
-                addProperty(2,"Type",capitalize(parent.type.name()));
                 addProperty(2,"Priority", capitalize(((Set)parent).getPriority().name()));
-                addProperty(2,"Children", "Amount: " + ((advancedNode)parent).getChildNodes().size());
+                addProperty(2,"Children (" + ((advancedNode)parent).getChildNodes().size() + ")");
                 ((advancedNode)parent).getChildNodes().forEach((c)->addProperty(2,Database.t.getElement(c).getName(),capitalize(Database.t.getElement(c).type.name())));
                 break;
             case SUBPATH:
-                panel.setLayout(new GridBagLayout());
-                addProperty(2,"Type",capitalize(parent.type.name()));
-                addProperty(2,"Arrangement",capitalize(((SubPath)parent).getPathtype().name()));
-                addProperty(2,"Children", "Amount: " + ((advancedNode)parent).getChildNodes().size());
+                addProperty(4,"Arrangement",capitalize(((SubPath)parent).getPathtype().name()));
+                addProperty(4,"Children (" + ((advancedNode)parent).getChildNodes().size() + ")");
                 addProperty(4,"Name","Type","Capacity","Probability");
                 for (int i = 0; i< ((advancedNode)parent).getChildNodes().size();i++) {
                     Node_abstract element = Database.t.getElement(((advancedNode)parent).getChildNodes().get(i));
@@ -77,15 +77,23 @@ public class PropertyDisplayFrame extends JFrame {
     private void addProperty(int gwidth, String ... data) {
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = -1;
+        c.gridx = 0;
         c.weightx = 1;
-        c.gridwidth = 1;
+        c.gridwidth = gwidth/data.length;
+        c.anchor = LINE_START;
+        c.gridy = grid_iter;
         for (String val : data) {
-            c.gridx += 1;
             JTextField valueTextField = new JTextField(val);
+            valueTextField.setHorizontalAlignment(SwingConstants.CENTER);
             ((GridBagLayout) panel.getLayout()).setConstraints(valueTextField,c);
+            valueTextField.setEditable(false);
             panel.add(valueTextField);
+            c.gridx += c.gridwidth;
         }
+        newLine();
+    }
+    private void newLine() {
+        grid_iter += 1;
     }
 
 }
