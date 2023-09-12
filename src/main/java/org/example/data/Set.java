@@ -14,7 +14,9 @@ public class Set extends Node_abstract implements advancedNode{
         this.names = names;
         this.priority = priority;
     }
-
+    public PRIORITY getPriority() {
+        return priority;
+    }
     @Override
     public void unpack() {
         while (!names.isEmpty()) {

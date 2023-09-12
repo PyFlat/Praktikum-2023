@@ -54,4 +54,7 @@ public class SubPath extends Node_abstract implements advancedNode{
             return ((advancedNode) Database.t.getElement(childNodes.get(childNodes.size()-1))).getOpenEnds();
         }
     }
+    public ArrayList<Integer> getCapacity() {return capacity;}
+    public ArrayList<Float> getProbabilities() {return probabilities;}
+    public TYPES getPathtype() {return pathtype;}
 }

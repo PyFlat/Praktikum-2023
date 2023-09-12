@@ -73,6 +73,8 @@ public class GraphFrame extends JFrame {
             graph.map = map;
             graph.nodes = nodes;
             graph.vertices = vertices;
+            PropertyDisplayFrame.nodes = nodes;
+            PropertyDisplayFrame.vertices = vertices;
             System.out.println("Finished precalc, started linking");
             link();
             /**/
