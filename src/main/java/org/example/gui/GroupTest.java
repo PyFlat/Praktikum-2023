@@ -3,20 +3,26 @@ package org.example.gui;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxUtils;
 import com.mxgraph.view.mxGraph;
+import org.example.gui.events.PopupListener;
 import org.example.gui.events.highlightListener;
 import org.example.gui.events.mouseEventProcessor;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 @Deprecated
 public class GroupTest {
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         mxGraph graph = new mxGraph();
         Object parent = graph.getDefaultParent();
         graph.getModel().beginUpdate();
@@ -29,8 +35,6 @@ public class GroupTest {
         graph.setCellsMovable(false);
         graph.setCellsSelectable(false);
 
-
-        //graph.set("rounded=1;fillColor=#FFFFFF;fontColor=#000000");
         try {
             mxCell a = (mxCell) graph.insertVertex(parent, null, "test", 0,0,100,50, "fillColor=#FFFFFF");
 
@@ -95,10 +99,14 @@ public class GroupTest {
             }
         });
 
-
+        graphComponent.getGraphControl().addMouseListener(new PopupListener());
 
         graphComponent.addMouseWheelListener(new CustomMouseWheelListener(graphComponent));
         GraphFrame frame = new GraphFrame();
+
+        //BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
+        //ImageIO.write(image, "PNG", new File("graph.png"));
+
         frame.add(graphComponent);
         frame.setTitle("Buggy s**t");
         frame.getContentPane().setLayout(new BorderLayout());
