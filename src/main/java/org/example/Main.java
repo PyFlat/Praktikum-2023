@@ -1,20 +1,17 @@
 package org.example;
 
-import org.example.data.*;
+import org.example.data.Database;
+import org.example.data.analysis.depthMap;
+import org.example.gui.GraphFrame;
+import org.example.io.JsonLoad;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import org.example.data.analysis.depthMap;
-import org.example.gui.GraphFrame;
-import org.example.io.JsonLoad;
 public class Main {
     public static void main(String[] args) {
-        //System.out.println("Hello World 2");
         File file = new File("src/main/java/org/example/xyz.json");
         try {
             String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
@@ -29,7 +26,6 @@ public class Main {
         System.out.println("Unpack completed");
         depthMap.runDepthCalc();
         ArrayList<ArrayList<String>> blocks = depthMap.mapHorizontal();
-        //System.out.println(Arrays.toString(blocks.toArray()));
         GraphFrame.visualize(blocks);
     }
 }
