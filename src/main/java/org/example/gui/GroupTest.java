@@ -99,7 +99,7 @@ public class GroupTest {
             }
         });
 
-        graphComponent.getGraphControl().addMouseListener(new PopupListener());
+        graphComponent.getGraphControl().addMouseListener(new PopupListener(graphComponent));
 
         graphComponent.addMouseWheelListener(new CustomMouseWheelListener(graphComponent));
         GraphFrame frame = new GraphFrame();
