@@ -18,15 +18,21 @@ public class mouseEventProcessor {
     public void processEvent(MouseEvent event) {
         Object cell = g.getCellAt(event.getX(),event.getY());
         if (!(cell instanceof mxCell)) {cell = null;}
-        if (!((mxCell) cell).isVertex()) {cell = null;}
-        if (cell == null && cell_current != null) {
-            stopHighlight();
-            cell_current = null;
-        }
-        if (cell != null && cell != cell_current) {
-            stopHighlight();
-            cell_current = cell;
-            startHighlight();
+        if (cell != null && !((mxCell) cell).isVertex()) {cell = null;}
+        if (cell_current == null) {
+            if (cell != null) {
+                cell_current = cell;
+                startHighlight();
+            }
+        } else {
+            if (cell != null) {
+                stopHighlight();
+                cell_current = cell;
+                startHighlight();
+            } else {
+                stopHighlight();
+                cell_current = cell;
+            }
         }
 
     }
