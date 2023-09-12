@@ -1,3 +1,5 @@
 package org.example.data;
 
-public enum NODETYPE {BASIC, NODE, SUBPATH, SET}
+public enum NODETYPE {
+    BASIC, SUBPATH, SET
+}
