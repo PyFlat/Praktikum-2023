@@ -39,7 +39,7 @@ public class PropertyDisplayFrame extends JFrame {
     public PropertyDisplayFrame(int x, int y, Object cell) {
         setSize(400, 200);
         setMinimumSize(getSize());
-        //setResizable(false);
+
         setLocation(x,y);
 
         panel = new JPanel();
@@ -72,6 +72,7 @@ public class PropertyDisplayFrame extends JFrame {
         }
         JScrollPane scrollPane = new JScrollPane(panel);
         add(scrollPane);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 
         setLocationRelativeTo(null);
     }
