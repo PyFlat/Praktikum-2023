@@ -123,6 +123,7 @@ public class CustomGraph extends mxGraph {
             System.out.println("ERROR, CANNOT FIND GOAL :(");
         }
     }
+
     public static void main(String[] args){
         org.example.Main.main(args);
     }

@@ -10,6 +10,7 @@ import com.mxgraph.util.mxUtils;
 import com.mxgraph.view.mxGraph;
 import org.example.data.*;
 import org.example.data.analysis.depthMap;
+import org.example.gui.events.CustomScrollbarUI;
 import org.example.gui.events.highlightListener;
 import org.example.gui.events.mouseEventProcessor;
 
@@ -121,8 +122,8 @@ public class GraphFrame extends JFrame {
 
         graphComponent.addMouseWheelListener(new CustomMouseWheelListener(graphComponent));
         graphComponent.getViewport().setBackground(new Color(30, 30, 30));
-        //graphComponent.setZoomFactor(1);
-        //graphComponent.zoomOut();
+        graphComponent.getVerticalScrollBar().setUI(new CustomScrollbarUI());
+        graphComponent.getHorizontalScrollBar().setUI(new CustomScrollbarUI());
         GraphFrame frame = new GraphFrame();
         frame.getContentPane().add(graphComponent);
         frame.pack();
