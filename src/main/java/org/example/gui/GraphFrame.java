@@ -4,14 +4,20 @@ import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 //import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxEvent;
+import com.mxgraph.util.mxUtils;
 import com.mxgraph.view.mxGraph;
 import org.example.data.*;
 import org.example.data.analysis.depthMap;
+import org.example.gui.events.highlightListener;
+import org.example.gui.events.mouseEventProcessor;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.*;
 
 public class GraphFrame extends JFrame {
@@ -76,6 +82,37 @@ public class GraphFrame extends JFrame {
             } catch (StackOverflowError e) {System.out.println("WARNING! LAYOUT DISABLED BECAUSE OF OVERFLOW! REDUCE COMPLEXITY!");}
         });
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
+        mouseEventProcessor p = new mouseEventProcessor(new highlightListener() {
+            @Override
+            public void highlightStart(Object cell) {
+                for (Object edges : graph.getEdges(cell)){
+                    mxCell edge = (mxCell) edges;
+                    String newStyle = mxUtils.setStyle(edge.getStyle(), mxConstants.STYLE_STROKEWIDTH, "2");
+                    newStyle = mxUtils.setStyle(newStyle, mxConstants.STYLE_STROKECOLOR, "#FF0000");
+                    edge.setStyle(newStyle);
+                    graph.refresh();
+                }
+
+            }
+
+            @Override
+            public void highlightStop(Object cell) {
+                for (Object edges : graph.getEdges(cell)){
+                    mxCell edge = (mxCell) edges;
+                    String newStyle = mxUtils.setStyle(edge.getStyle(), mxConstants.STYLE_STROKEWIDTH, "1");
+                    newStyle = mxUtils.setStyle(newStyle, mxConstants.STYLE_STROKECOLOR, "#6482b9");
+                    edge.setStyle(newStyle);
+                    graph.refresh();
+                }
+            }
+        }, graphComponent);
+        graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                p.processEvent(e);
+            }
+        });
+
         graphComponent.addMouseWheelListener(new CustomMouseWheelListener(graphComponent));
         //graphComponent.setZoomFactor(1);
         //graphComponent.zoomOut();

@@ -2,24 +2,17 @@ package org.example.gui;
 
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.model.mxCell;
-import com.mxgraph.model.mxIGraphModel;
-import com.mxgraph.swing.handler.mxCellMarker;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxConstants;
-import com.mxgraph.util.mxEventObject;
-import com.mxgraph.util.mxEventSource;
-import com.mxgraph.util.mxEvent;
+import com.mxgraph.util.mxUtils;
 import com.mxgraph.view.mxGraph;
 import org.example.gui.events.highlightListener;
 import org.example.gui.events.mouseEventProcessor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
-import java.util.Arrays;
 import java.util.Map;
 
 public class GroupTest {
@@ -74,16 +67,25 @@ public class GroupTest {
         mouseEventProcessor p = new mouseEventProcessor(new highlightListener() {
             @Override
             public void highlightStart(Object cell) {
-                mxCell edgeCell = (mxCell) cell;
-                String newStyle =  edgeCell.getStyle() + ";strokeWidth=3";
-                edgeCell.setStyle(newStyle);
+                for (Object edges : graph.getEdges(cell)){
+                    mxCell edge = (mxCell) edges;
+                    String newStyle = mxUtils.setStyle(edge.getStyle(), mxConstants.STYLE_STROKEWIDTH, "2");
+                    newStyle = mxUtils.setStyle(newStyle, mxConstants.STYLE_STROKECOLOR, "#FF0000");
+                    edge.setStyle(newStyle);
+                    graph.refresh();
+                }
+
             }
 
             @Override
             public void highlightStop(Object cell) {
-                mxCell edgeCell = (mxCell) cell;
-                String newStyle =  edgeCell.getStyle() + ";strokeWidth=1";
-                edgeCell.setStyle(newStyle);
+                for (Object edges : graph.getEdges(cell)){
+                    mxCell edge = (mxCell) edges;
+                    String newStyle = mxUtils.setStyle(edge.getStyle(), mxConstants.STYLE_STROKEWIDTH, "1");
+                    newStyle = mxUtils.setStyle(newStyle, mxConstants.STYLE_STROKECOLOR, "#6482b9");
+                    edge.setStyle(newStyle);
+                    graph.refresh();
+                }
             }
         }, graphComponent);
         graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionAdapter() {

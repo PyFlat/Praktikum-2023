@@ -87,7 +87,7 @@ public class CustomGraph extends mxGraph {
             boolean hasPassed = false;
             int[] vc = findCoords(vertex);
             if (edge != null) {
-                System.out.println("VERTEX: " + vertex + "; EDGE: " + ((mxCell)edge).getSource());
+                //System.out.println("VERTEX: " + vertex + "; EDGE: " + ((mxCell)edge).getSource());
             }
             if (edge == null) {return true;}
             if (((mxCell)edge).getSource().isCollapsed() && ((mxCell)edge).getSource() != cellSelected && !((mxCell)edge).getValue().equals(" ")) {
@@ -110,7 +110,7 @@ public class CustomGraph extends mxGraph {
             if (!show) { //TODO find way to remove hardcoded " "
                 if (!connections.containsKey(cellSelected)) {
                     connections.put(cellSelected, graph.insertEdge(graph.getDefaultParent(), null, " ", cellSelected, goal.get(0)));
-                    System.out.println(Arrays.toString(graph.getOutgoingEdges(cellSelected)));
+                    //System.out.println(Arrays.toString(graph.getOutgoingEdges(cellSelected)));
                     graph.repaint();
                 }
             } else {
