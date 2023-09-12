@@ -25,7 +25,7 @@ public class mouseEventProcessor {
                 startHighlight();
             }
         } else {
-            if (cell != null) {
+            if (cell != null && cell != cell_current) {
                 stopHighlight();
                 cell_current = cell;
                 startHighlight();
