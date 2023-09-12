@@ -7,6 +7,7 @@ import com.mxgraph.util.mxEvent;
 import org.example.data.*;
 import org.example.data.analysis.depthMap;
 import org.example.gui.events.CustomScrollbarUI;
+import org.example.gui.events.PopupListener;
 import org.example.gui.events.highlightListener;
 import org.example.gui.events.mouseEventProcessor;
 
@@ -124,6 +125,7 @@ public class GraphFrame extends JFrame {
         });
 
         graphComponent.addMouseWheelListener(new CustomMouseWheelListener(graphComponent));
+        graphComponent.getGraphControl().addMouseListener(new PopupListener(graphComponent));
         graphComponent.getViewport().setBackground(new Color(30, 30, 30));
         graphComponent.getVerticalScrollBar().setUI(new CustomScrollbarUI());
         graphComponent.getVerticalScrollBar().setUnitIncrement(20);

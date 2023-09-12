@@ -3,6 +3,7 @@ package org.example.gui.events;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import org.example.gui.GraphFrame;
+import org.example.gui.PropertyDisplayFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,17 +41,8 @@ public class PopupListener implements MouseListener {
     public void mousePressed(MouseEvent event) {openPopup(event);}
     public void mouseReleased(MouseEvent event) {openPopup(event);}
     private void showPopup(MouseEvent e, Object cell) {
-        JFrame popupFrame = new JFrame();
-        popupFrame.setSize(200, 200);
-        popupFrame.setResizable(false);
-        popupFrame.setLocation(e.getX(), e.getY());
-        popupFrame.setLayout(new GridLayout(0, 1));
+        JFrame popupFrame = new PropertyDisplayFrame(e.getX(), e.getY(), cell);
         popupFrame.addWindowListener(new CustomWindowAdapter(this, cell));
-        // Add your strings to the popup frame
-        popupFrame.add(new JLabel("String 1"));
-        popupFrame.add(new JLabel("String 2"));
-        popupFrame.add(new JLabel("String 3"));
-
         popupFrame.setVisible(true);
     }
 }
