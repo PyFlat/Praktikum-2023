@@ -74,21 +74,22 @@ public class GroupTest {
         mouseEventProcessor p = new mouseEventProcessor(new highlightListener() {
             @Override
             public void highlightStart(Object cell) {
-
+                mxCell edgeCell = (mxCell) cell;
+                String newStyle =  edgeCell.getStyle() + ";strokeWidth=3";
+                edgeCell.setStyle(newStyle);
             }
 
             @Override
             public void highlightStop(Object cell) {
-
+                mxCell edgeCell = (mxCell) cell;
+                String newStyle =  edgeCell.getStyle() + ";strokeWidth=1";
+                edgeCell.setStyle(newStyle);
             }
         }, graphComponent);
         graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                Object cell = graphComponent.getCellAt(e.getX(), e.getY());
-                if (cell != null && graph.getModel().isVertex(cell)){
-                    System.out.println("Mouse Entered cell: " + Arrays.toString(graph.getEdges(cell)));
-                }
+                p.processEvent(e);
             }
         });
 
