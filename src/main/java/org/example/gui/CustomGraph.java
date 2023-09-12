@@ -109,7 +109,7 @@ public class CustomGraph extends mxGraph {
 
             if (!show) { //TODO find way to remove hardcoded " "
                 if (!connections.containsKey(cellSelected)) {
-                    connections.put(cellSelected, graph.insertEdge(graph.getDefaultParent(), null, " ", cellSelected, goal.get(0)));
+                    connections.put(cellSelected, graph.insertEdge(graph.getDefaultParent(), null, " ", cellSelected, goal.get(0), "strokeColor=#ccd0d9;"));
                     //System.out.println(Arrays.toString(graph.getOutgoingEdges(cellSelected)));
                     graph.repaint();
                 }

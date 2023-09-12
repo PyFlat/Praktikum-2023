@@ -14,10 +14,8 @@ import org.example.gui.events.highlightListener;
 import org.example.gui.events.mouseEventProcessor;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 
 public class GraphFrame extends JFrame {
@@ -64,9 +62,9 @@ public class GraphFrame extends JFrame {
                     Node_abstract n = Database.t.getElementByKey(map.get(x).get(y));
                     nodes.get(x).add((Node_abstract) n);
                     NODETYPE type = ((Node_abstract) n).type;
-                    String style = "fillColor=#3c3c3c;strokeColor=#ffffff;fontColor=#ffffff;fontSize=+12;fontFamily=calibri;verticalAlign=center;horizontalAlign=center";
-                    if (type == NODETYPE.SET) {style += "rounded=1;";}
-                    if (type == NODETYPE.SUBPATH) {style += "shape=ellipse;";}
+                    String style = "fillColor=#3c3c3c;strokeColor=#ccd0d9;fontColor=#ffffff;fontSize=12;";
+                    if (type == NODETYPE.SET) {style += "rounded=1;arcSize:10";}
+                    if (type == NODETYPE.SUBPATH) {style += "rounded=1;arcSize:25";}
                     if (type == NODETYPE.BASIC) {style += "";}
                     acceptMultipleInputs.get(x).add(1);
                     parents.get(x).add(null);
@@ -108,7 +106,7 @@ public class GraphFrame extends JFrame {
                 for (Object edges : graph.getEdges(cell)){
                     mxCell edge = (mxCell) edges;
                     String newStyle = mxUtils.setStyle(edge.getStyle(), mxConstants.STYLE_STROKEWIDTH, "1");
-                    newStyle = mxUtils.setStyle(newStyle, mxConstants.STYLE_STROKECOLOR, "#6482b9");
+                    newStyle = mxUtils.setStyle(newStyle, mxConstants.STYLE_STROKECOLOR, "#ccd0d9");
                     edge.setStyle(newStyle);
                     graph.refresh();
                 }
@@ -122,10 +120,11 @@ public class GraphFrame extends JFrame {
         });
 
         graphComponent.addMouseWheelListener(new CustomMouseWheelListener(graphComponent));
+        graphComponent.getViewport().setBackground(new Color(30, 30, 30));
         //graphComponent.setZoomFactor(1);
         //graphComponent.zoomOut();
         GraphFrame frame = new GraphFrame();
-        frame.add(graphComponent);
+        frame.getContentPane().add(graphComponent);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -154,7 +153,7 @@ public class GraphFrame extends JFrame {
         System.out.println("Finished connect");
     }
     private static void link_once(Object from, Object to) {
-        graph.insertEdge(parent,null,"",from,to);
+        graph.insertEdge(parent,null,"",from,to, "strokeColor=#ccd0d9;");
     }
     private static void link_once(Node_abstract from, Node_abstract to, int cidx, int delta) {
         //System.out.println("Connected " + from.getName() + " to " + to.getName());
