@@ -59,11 +59,19 @@ public class GraphFrame extends JFrame {
                 acceptMultipleInputs.add(new ArrayList<>());
                 parents.add(new ArrayList<>());
                 for (int y=0;y<map.get(x).size();y++) {
-                    vertices.get(x).add(graph.insertVertex(parent, null, map.get(x).get(y),x*100+(x-1)*100+100,y*50+(y-1)*30+30,100,50));
+
+
                     Node_abstract n = Database.t.getElementByKey(map.get(x).get(y));
                     nodes.get(x).add((Node_abstract) n);
+                    NODETYPE type = ((Node_abstract) n).type;
+                    String style = "fillColor=#3c3c3c;strokeColor=#ffffff;fontColor=#ffffff;fontSize=+12;fontFamily=calibri;verticalAlign=center;horizontalAlign=center";
+                    if (type == NODETYPE.SET) {style += "rounded=1;";}
+                    if (type == NODETYPE.SUBPATH) {style += "shape=ellipse;";}
+                    if (type == NODETYPE.BASIC) {style += "";}
                     acceptMultipleInputs.get(x).add(1);
                     parents.get(x).add(null);
+                    mxCell vertex = (mxCell) graph.insertVertex(parent, null, map.get(x).get(y),x*100+(x-1)*100+100,y*50+(y-1)*30+30,100,50, style);
+                    vertices.get(x).add(vertex);
                 }
             }
             graph.map = map;
