@@ -10,6 +10,8 @@ import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxEventSource;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.view.mxGraph;
+import org.example.gui.events.highlightListener;
+import org.example.gui.events.mouseEventProcessor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -69,7 +71,17 @@ public class GroupTest {
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
         graphComponent.setCenterZoom(true);
         graphComponent.requestFocus();
+        mouseEventProcessor p = new mouseEventProcessor(new highlightListener() {
+            @Override
+            public void highlightStart(Object cell) {
 
+            }
+
+            @Override
+            public void highlightStop(Object cell) {
+
+            }
+        }, graphComponent);
         graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
