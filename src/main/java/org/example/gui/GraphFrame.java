@@ -1,13 +1,9 @@
 package org.example.gui;
 
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
-//import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
-import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxEvent;
-import com.mxgraph.util.mxUtils;
-import com.mxgraph.view.mxGraph;
 import org.example.data.*;
 import org.example.data.analysis.depthMap;
 import org.example.gui.events.CustomScrollbarUI;
@@ -16,8 +12,10 @@ import org.example.gui.events.mouseEventProcessor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class GraphFrame extends JFrame {
     private static Object parent;
@@ -30,8 +28,6 @@ public class GraphFrame extends JFrame {
 
     private static ArrayList<ArrayList<Node_abstract>> parents;
     private static ArrayList<ArrayList<Integer>> acceptMultipleInputs;
-
-    private static ArrayList<ArrayList<Node_abstract>> goals;
 
     public static void visualize(ArrayList<ArrayList<String>> newmap) {
         //System.out.println(Arrays.toString(newmap.toArray()));
@@ -61,12 +57,12 @@ public class GraphFrame extends JFrame {
 
 
                     Node_abstract n = Database.t.getElementByKey(map.get(x).get(y));
-                    nodes.get(x).add((Node_abstract) n);
-                    NODETYPE type = ((Node_abstract) n).type;
+                    nodes.get(x).add(n);
+                    NODETYPE type = n.type;
                     String style = "fillColor=#3c3c3c;strokeColor=#ccd0d9;fontColor=#ffffff;fontSize=12;";
-                    if (type == NODETYPE.SET) {style += "rounded=1;arcSize:10";}
-                    if (type == NODETYPE.SUBPATH) {style += "rounded=1;arcSize:25";}
-                    if (type == NODETYPE.BASIC) {style += "";}
+                    if (type == NODETYPE.SET) {style += "rounded=1";}
+                    if (type == NODETYPE.SUBPATH) {style += "";}
+                    if (type == NODETYPE.BASIC) {style += "shape=ellipse";}
                     acceptMultipleInputs.get(x).add(1);
                     parents.get(x).add(null);
                     mxCell vertex = (mxCell) graph.insertVertex(parent, null, map.get(x).get(y),x*100+(x-1)*100+100,y*50+(y-1)*30+30,100,50, style);
@@ -94,9 +90,11 @@ public class GraphFrame extends JFrame {
             public void highlightStart(Object cell) {
                 for (Object edges : graph.getEdges(cell)){
                     mxCell edge = (mxCell) edges;
-                    String newStyle = mxUtils.setStyle(edge.getStyle(), mxConstants.STYLE_STROKEWIDTH, "2");
-                    newStyle = mxUtils.setStyle(newStyle, mxConstants.STYLE_STROKECOLOR, "#FF0000");
-                    edge.setStyle(newStyle);
+                    String existingStyle = edge.getStyle();
+                    String updatedStyle = existingStyle.replaceAll("strokeColor=#ccd0d9", "strokeColor=#FF0000");
+                    updatedStyle = updatedStyle.replaceAll("strokeWidth=1", "strokeWidth=2");
+                    System.out.println(updatedStyle);
+                    edge.setStyle(updatedStyle);
                     graph.refresh();
                 }
 
@@ -106,9 +104,10 @@ public class GraphFrame extends JFrame {
             public void highlightStop(Object cell) {
                 for (Object edges : graph.getEdges(cell)){
                     mxCell edge = (mxCell) edges;
-                    String newStyle = mxUtils.setStyle(edge.getStyle(), mxConstants.STYLE_STROKEWIDTH, "1");
-                    newStyle = mxUtils.setStyle(newStyle, mxConstants.STYLE_STROKECOLOR, "#ccd0d9");
-                    edge.setStyle(newStyle);
+                    String existingStyle = edge.getStyle();
+                    String updatedStyle = existingStyle.replaceAll("strokeColor=#FF0000", "strokeColor=#ccd0d9");
+                    updatedStyle = updatedStyle.replaceAll("strokeWidth=2", "strokeWidth=1");
+                    edge.setStyle(updatedStyle);
                     graph.refresh();
                 }
             }
@@ -116,6 +115,11 @@ public class GraphFrame extends JFrame {
         graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
+                p.processEvent(e);
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e){
                 p.processEvent(e);
             }
         });
@@ -131,9 +135,6 @@ public class GraphFrame extends JFrame {
         frame.setVisible(true);
     }
 
-    private static void fillGoals(Node_abstract current, Node_abstract to) {
-
-    }
     private static void link() {
         ArrayList<Integer> a = new ArrayList<>();
         //a.add(map.size()-1);
@@ -154,7 +155,7 @@ public class GraphFrame extends JFrame {
         System.out.println("Finished connect");
     }
     private static void link_once(Object from, Object to) {
-        graph.insertEdge(parent,null,"",from,to, "strokeColor=#ccd0d9;");
+        graph.insertEdge(parent,null,"",from,to, "strokeColor=#ccd0d9;strokeWidth=1;");
     }
     private static void link_once(Node_abstract from, Node_abstract to, int cidx, int delta) {
         //System.out.println("Connected " + from.getName() + " to " + to.getName());
@@ -199,14 +200,6 @@ public class GraphFrame extends JFrame {
             return 1;
         }
         SubPath parent = (SubPath) parents.get(x).get(y);
-        /*
-        int _x = 0; // TODO allow for parallel branches.
-        for (Node_abstract n : nh) {
-            if (n == current) {
-                break;
-            }
-            _x += 1;
-        }*/
         int _x = current.getPathLoc(parent);
         //System.out.println("HEY: " + current.getName() + " has a location in " + parent.getName() + " that is " + _x);
         if (_x == 0) {return 1;}
@@ -247,8 +240,6 @@ public class GraphFrame extends JFrame {
             for (Node_abstract child : children) {
                  int[] cd = findParents(child,current, x+1, y);
                  x = cd[0];
-                 //y = cd[1];
-                //return new int[]{x,y};
             }
         }
         if (current.type == NODETYPE.SET) {
@@ -262,24 +253,20 @@ public class GraphFrame extends JFrame {
             ArrayList<Node_abstract> children= new ArrayList<>();
             ((advancedNode) current).getChildNodes().forEach((i)->children.add(Database.t.getElement(i)));
             Collections.reverse(children);
-            int i = 0;
             for (Node_abstract child : children) {
-                int[] cd = findParents(child,current, x+1, y);
-                i += 1;
+                findParents(child, current, x + 1, y);
             }
             return new int[]{x+current.getLength()-1,y};
         }
         return new int[]{x,y};
     }
     private static int recurseiveConnect2(Node_abstract current, Node_abstract linkTo, int cidx, ArrayList<Integer> destinations, boolean destinationOverride) {
-        //System.out.println("Called " +cidx+ " " + current.getName());
-        //System.out.println(Arrays.toString(destinations.toArray()));
         if (current.type == NODETYPE.BASIC) {
             if (destinationOverride) {
                 link_once(current, linkTo, cidx, 1);
                 return cidx;
             }
-            if (destinations.size()>0) {
+            if (!destinations.isEmpty()) {
                 if (getVertex(linkTo, destinations.get(destinations.size()-1), true) != null) {
                     link_once(current, linkTo, cidx, destinations.get(destinations.size()-1)-cidx);
                     return cidx;
@@ -299,7 +286,7 @@ public class GraphFrame extends JFrame {
             //System.out.println("Entered subpath " + current.getName());
             ArrayList<Integer> children = ((advancedNode) current).getChildNodes();
             ArrayList<Node_abstract> node_children = new ArrayList<>();
-            children.forEach((e)->node_children.add((Node_abstract) Database.t.getElement(e)));
+            children.forEach((e)->node_children.add(Database.t.getElement(e)));
             Collections.reverse(node_children);
             link_once(current,node_children.get(0),cidx,1);
             for (int i=0;i<node_children.size();i++) {
