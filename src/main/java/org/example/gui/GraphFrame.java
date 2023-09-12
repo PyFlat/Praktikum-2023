@@ -93,7 +93,6 @@ public class GraphFrame extends JFrame {
                     String existingStyle = edge.getStyle();
                     String updatedStyle = existingStyle.replaceAll("strokeColor=#ccd0d9", "strokeColor=#FF0000");
                     updatedStyle = updatedStyle.replaceAll("strokeWidth=1", "strokeWidth=2");
-                    System.out.println(updatedStyle);
                     edge.setStyle(updatedStyle);
                     graph.refresh();
                 }
@@ -127,7 +126,9 @@ public class GraphFrame extends JFrame {
         graphComponent.addMouseWheelListener(new CustomMouseWheelListener(graphComponent));
         graphComponent.getViewport().setBackground(new Color(30, 30, 30));
         graphComponent.getVerticalScrollBar().setUI(new CustomScrollbarUI());
+        graphComponent.getVerticalScrollBar().setUnitIncrement(20);
         graphComponent.getHorizontalScrollBar().setUI(new CustomScrollbarUI());
+        graphComponent.getHorizontalScrollBar().setUnitIncrement(20);
         GraphFrame frame = new GraphFrame();
         frame.getContentPane().add(graphComponent);
         frame.pack();
