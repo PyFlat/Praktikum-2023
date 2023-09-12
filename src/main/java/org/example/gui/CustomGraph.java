@@ -1,19 +1,20 @@
 package org.example.gui;
 
 import com.mxgraph.model.mxCell;
-import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.view.mxGraph;
 import org.example.data.NODETYPE;
-import org.example.data.Node;
 import org.example.data.Node_abstract;
 import org.example.data.analysis.depthMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 public class CustomGraph extends mxGraph {
-    private HashMap<Object , Object> connections = new HashMap<>(); // <from , to>
+    private final HashMap<Object , Object> connections = new HashMap<>(); // <from , to>
 
     public ArrayList<ArrayList<String>> map;
     public ArrayList<ArrayList<Node_abstract>> nodes;
@@ -29,7 +30,11 @@ public class CustomGraph extends mxGraph {
     private Node_abstract findNode(Object cell) {
         int[] d = findCoords(cell);
         if (d == null) return null;
-        return nodes.get(d[0]).get(d[1]);
+        try {
+            return nodes.get(d[0]).get(d[1]);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
     private int[] findCoords(Object cell) {
         for (int x = 0; x < map.size(); x++) {
@@ -44,7 +49,7 @@ public class CustomGraph extends mxGraph {
     @Override
     public boolean isCellFoldable(Object cell, boolean collapse)
     {
-        return findNode(cell).type != NODETYPE.BASIC && findNode(cell) != depthMap.getMaxDepthStart();
+        return Objects.requireNonNull(findNode(cell)).type != NODETYPE.BASIC && findNode(cell) != depthMap.getMaxDepthStart();
     }
     @Override
     public Object[] foldCells(boolean collapse, boolean recurse, Object[] cells, boolean checkFoldable)
@@ -73,27 +78,23 @@ public class CustomGraph extends mxGraph {
     {
         List<Object> cellsAffected = new ArrayList<>();
         Node_abstract parent = findNode(cellSelected);
-        int parent_x = findCoords(cellSelected)[0];
+        int parent_x = Objects.requireNonNull(findCoords(cellSelected))[0];
         ArrayList<mxCell> goal  = new ArrayList<>();
 
         graph.traverse(cellSelected, true, (vertex, edge) -> {
 
             //System.out.println(vertex);
             int[] c = findCoords(vertex);
-            if (c[0] >= parent_x+parent.getLength()) {
+            if ((c != null ? c[0] : 0) >= parent_x+ (parent != null ? parent.getLength() : 0)) {
                 goal.add((mxCell) vertex);
                 //return false;
             }
             boolean hasPassed = false;
-            int[] vc = findCoords(vertex);
-            if (edge != null) {
-                //System.out.println("VERTEX: " + vertex + "; EDGE: " + ((mxCell)edge).getSource());
-            }
             if (edge == null) {return true;}
             if (((mxCell)edge).getSource().isCollapsed() && ((mxCell)edge).getSource() != cellSelected && !((mxCell)edge).getValue().equals(" ")) {
                 return false;
             }
-            if(vertex != cellSelected && !goal.contains(vertex) /*&& (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected)*/)
+            if(vertex != cellSelected && !goal.contains((mxCell) vertex) /*&& (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected)*/)
             {
                 cellsAffected.add(vertex);
                 hasPassed = true;
