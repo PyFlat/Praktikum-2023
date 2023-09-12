@@ -38,6 +38,7 @@ public class PropertyDisplayFrame extends JFrame {
     private String capitalize(String s) {return s.toUpperCase().substring(0,1)+s.toLowerCase().substring(1);}
     public PropertyDisplayFrame(int x, int y, Object cell) {
         setSize(400, 200);
+        setMinimumSize(getSize());
         //setResizable(false);
         setLocation(x,y);
 
