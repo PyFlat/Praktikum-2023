@@ -14,7 +14,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.Map;
-
+@Deprecated
 public class GroupTest {
     public static void main(String[] args){
         mxGraph graph = new mxGraph();
