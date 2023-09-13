@@ -9,12 +9,12 @@ import com.mxgraph.util.mxUtils;
 import com.mxgraph.view.mxGraph;
 import org.example.gui.events.EventHighlightListener;
 import org.example.gui.events.PopupListener;
-import org.example.gui.events.highlightListener;
 import org.example.gui.events.mouseEventProcessor;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Map;
 @Deprecated
 public class GroupTest {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         mxGraph graph = new mxGraph();
         Object parent = graph.getDefaultParent();
         graph.getModel().beginUpdate();
@@ -105,15 +105,41 @@ public class GroupTest {
         graphComponent.addMouseWheelListener(new CustomMouseWheelListener(graphComponent));
         GraphFrame frame = new GraphFrame();
 
-        //BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
-        //ImageIO.write(image, "PNG", new File("graph.png"));
-
         frame.add(graphComponent);
+
+        frame.setJMenuBar(createMenuBar(frame, graph));
+
         frame.setTitle("Buggy s**t");
         frame.getContentPane().setLayout(new BorderLayout());
         frame.getContentPane().add(graphComponent, BorderLayout.CENTER);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+    }
+
+    private static JMenuBar createMenuBar(GraphFrame frame, mxGraph graph) {
+        ActionListener listener = e -> {
+            FileDialog fd = new FileDialog(frame, "Choose the save folder", FileDialog.SAVE);
+            fd.setFile("*.png");
+            fd.setVisible(true);
+            String filePath = fd.getDirectory()+fd.getFile();
+            if (!filePath.toLowerCase().endsWith(".png")){
+                filePath += ".png";
+            }
+            BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
+            try {
+                ImageIO.write(image, "PNG", new File(filePath));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        };
+        JMenuBar mb = new JMenuBar();
+        JMenu menu1 = new JMenu("Tools");
+        JMenuItem exportPng = new JMenuItem("Export as PNG");
+        exportPng.addActionListener(listener);
+        menu1.add(exportPng);
+        mb.add(menu1);
+        return mb;
     }
 }

@@ -3,15 +3,23 @@ package org.example.gui;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxEvent;
+import com.mxgraph.view.mxGraph;
 import org.example.data.*;
 import org.example.data.analysis.depthMap;
 import org.example.gui.events.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -254,9 +262,37 @@ public class GraphFrame extends JFrame {
         graphComponent.getHorizontalScrollBar().setUnitIncrement(20);
         GraphFrame frame = new GraphFrame();
         frame.getContentPane().add(graphComponent);
+        frame.setJMenuBar(createMenuBar(frame, graph));
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+    }
+    private static JMenuBar createMenuBar(GraphFrame frame, mxGraph graph) {
+        ActionListener listener = e -> {
+            JFileChooser fd = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Png Files (.png)", "png");
+            fd.setFileFilter(filter);
+            int returnValue = fd.showSaveDialog(frame);
+            if (returnValue == JFileChooser.APPROVE_OPTION){
+                String filePath = fd.getSelectedFile().getAbsolutePath();
+                if (!filePath.toLowerCase().endsWith(".png")){
+                    filePath += ".png";
+                }
+                BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, new Color(30,30,30), true, null);
+                try {
+                    ImageIO.write(image, "PNG", new File(filePath));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        };
+        JMenuBar mb = new JMenuBar();
+        JMenu menu1 = new JMenu("Tools");
+        JMenuItem exportPng = new JMenuItem("Export as PNG");
+        exportPng.addActionListener(listener);
+        menu1.add(exportPng);
+        mb.add(menu1);
+        return mb;
     }
 
     private static void link() {
