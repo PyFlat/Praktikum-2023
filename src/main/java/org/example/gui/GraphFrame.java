@@ -6,6 +6,7 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.view.mxGraph;
+import org.example.Main;
 import org.example.data.*;
 import org.example.data.analysis.depthMap;
 import org.example.gui.events.*;
@@ -103,6 +104,9 @@ public class GraphFrame extends JFrame {
             link();
             /**/
         } finally {
+            if (Main.config.get("START_COLLAPSED").equals("true")) {
+                collapseAll(false);
+            }
             layout.execute(parent);
             graph.getModel().endUpdate();
         }
@@ -267,6 +271,16 @@ public class GraphFrame extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
+    private static void collapseAll(boolean reversed) {
+        for (int x = map.size()-1;x>-1;x--) {
+            for (int y = map.get(x).size()-1;y>-1;y--) {
+                if (graph.isCellFoldable(vertices.get(x).get(y),!reversed)) {
+                    ((CustomGraph)graph).toggleSubtree(graph,vertices.get(x).get(y),reversed);
+                    graph.getModel().setCollapsed(vertices.get(x).get(y),!reversed);
+                }
+            }
+        }
+    }
     private static JMenuBar createMenuBar(GraphFrame frame, mxGraph graph) {
         ActionListener listener = e -> {
             JFileChooser fd = new JFileChooser();
@@ -296,17 +310,18 @@ public class GraphFrame extends JFrame {
         JMenuItem collapseAll = new JMenuItem("Collapse All");
         collapseAll.setAccelerator(KeyStroke.getKeyStroke('C', KeyEvent.CTRL_DOWN_MASK));
         collapseAll.addActionListener(e -> {
-            for (int x = map.size()-1;x>-1;x--) {
-                for (int y = map.get(x).size()-1;y>-1;y--) {
-                    if (graph.isCellFoldable(vertices.get(x).get(y),true)) {
-                        ((CustomGraph)graph).toggleSubtree(graph,vertices.get(x).get(y),false);
-                        graph.getModel().setCollapsed(vertices.get(x).get(y),true);
-                    }
-                }
-            }
+            collapseAll(false);
             layout.execute(parent);
         });
         menu1.add(collapseAll);
+
+        JMenuItem expandAll = new JMenuItem("Expand All");
+        expandAll.setAccelerator(KeyStroke.getKeyStroke('E',KeyEvent.CTRL_DOWN_MASK));
+        expandAll.addActionListener(e -> {
+            collapseAll(true);
+            layout.execute(parent);
+        });
+        menu1.add(expandAll);
         mb.add(menu1);
         return mb;
     }

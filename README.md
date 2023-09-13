@@ -1,15 +1,34 @@
-# Praktikum-2023
+<div><h1 align="center">Praktikum-2023</h1></div>
 
-## Modules used
-- Flatlaf
-- Jgraphx
-- Json
 
 ## Description
 Can be used to visualize the hirarchical structure of paths in the software crowd:it by accu:rate (📍 Germany)
 
 ## Usage
-To use this software, first clone the github repo and open <NAME>.json. The json follows the following structure:
+To use this software, first clone the GitHub repo and navigate to out/artifacts/Praktikum2023_jar. You will find three files located there:
+* A file named config.cfg, that includes project [config](#config)
+* A file named xyz.json . This is just a test file, and it is used for testing.
+* A java archive named Praktikum2023.jar . You can run this file. If you want more debug information, use the cmd to execute the file.
+  ```java -jar Praktikum2023.jar``` **WARNING: You need to have java version 8+ installed.**
+
+## Config
+The config.cfg file is used to configure the project.
+<table>
+    <tr>
+        <th>key</th>
+        <th>value</th>
+    </tr>
+    <tr>
+        <td>JSON</td>
+        <td>Relative path to json</td>
+    </tr>
+</table>
+
+**IMPORTANT: THE config.cfg file has to be kept in the same directory as the jar file at all times.**
+
+## JSON
+Configure the json with the following structure.
+
 ```json
 {
    "paths":[

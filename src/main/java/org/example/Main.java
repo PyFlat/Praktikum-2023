@@ -12,16 +12,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Main {
-    private static HashMap<String , String> config = new HashMap<>();
+    public static HashMap<String , String> config = new HashMap<>();
     public static void main(String[] args) {
         File cfgFile = new File("config.cfg");
         try {
             String cf = new String(Files.readAllBytes(Paths.get(cfgFile.toURI())));
-            String[] pts = cf.split("(\n|;)");
-            for (String s : pts) {config.put(s.split(" *= *")[0],s.split(" *= *")[1]);}
+            String[] pts = cf.split("(;?(\r\n|\n|\r)|;(\r\n|\r|\n)?)");
+            for (String s : pts) {
+                config.put(s.split(" *= *")[0],s.split(" *= *")[1]);
+                System.out.println(Arrays.toString(pts));
+            }
         } catch (IOException e) {
             System.out.println("Unable to reach config.cfg");
         }
