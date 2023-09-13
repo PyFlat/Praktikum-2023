@@ -21,7 +21,7 @@ public class Main {
         try {
             String cf = new String(Files.readAllBytes(Paths.get(cfgFile.toURI())));
             String[] pts = cf.split("(\n|;)");
-            for (String s : pts) {config.put(s.split("=")[0],s.split("=")[1]);}
+            for (String s : pts) {config.put(s.split(" *= *")[0],s.split(" *= *")[1]);}
         } catch (IOException e) {
             System.out.println("Unable to reach config.cfg");
         }
