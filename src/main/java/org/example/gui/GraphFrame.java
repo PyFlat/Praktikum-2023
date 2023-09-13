@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -292,6 +293,15 @@ public class GraphFrame extends JFrame {
         JMenuItem exportPng = new JMenuItem("Export as PNG");
         exportPng.addActionListener(listener);
         menu1.add(exportPng);
+
+        JMenuItem collapseAll = new JMenuItem("Collapse All");
+        collapseAll.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        menu1.add(collapseAll);
         mb.add(menu1);
         return mb;
     }
