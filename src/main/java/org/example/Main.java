@@ -12,10 +12,21 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Main {
+    private static HashMap<String , String> config = new HashMap<>();
     public static void main(String[] args) {
+        File cfgFile = new File("config.cfg");
+        try {
+            String cf = new String(Files.readAllBytes(Paths.get(cfgFile.toURI())));
+            String[] pts = cf.split("(\n|;)");
+            for (String s : pts) {config.put(s.split("=")[0],s.split("=")[1]);}
+        } catch (IOException e) {
+            System.out.println("Unable to reach config.cfg");
+        }
         FlatDarkLaf.setup();
-        File file = new File("src/main/java/org/example/xyz.json");
+        File file = new File(config.get("JSON"));
         try {
             String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
             JsonLoad.loadFromJson(content);
