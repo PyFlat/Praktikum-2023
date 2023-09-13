@@ -22,6 +22,10 @@ The config.cfg file is used to configure the project.
         <td>JSON</td>
         <td>Relative path to json</td>
     </tr>
+    <tr>
+        <td>START_COLLAPSED</td>
+        <td>Boolean whether the graph is collapsed by default or not</td>
+    </tr>
 </table>
 
 **IMPORTANT: THE config.cfg file has to be kept in the same directory as the jar file at all times.**
