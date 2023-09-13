@@ -331,7 +331,7 @@ public class GraphFrame extends JFrame {
         Node_abstract prev = nh.get(_x-1);
         if (prev.type == NODETYPE.BASIC) {return 1;}
         else {
-            return ((advancedNode) prev).getOpenEnds();
+            return prev.getOpenEnds();
         }
     }
     private static int[] findParents(Node_abstract current, Node_abstract parent, int x, int y) {

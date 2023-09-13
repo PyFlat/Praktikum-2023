@@ -50,10 +50,7 @@ public class Set extends Node_abstract implements advancedNode{
         int ends = 0;
         for (int i: childNodes) {
             Node_abstract n = Database.t.getElement(i);
-            if (n.type == NODETYPE.BASIC) ends += 1;
-            else {
-                ends += ((advancedNode) n).getOpenEnds();
-            }
+            ends += n.getOpenEnds();
         }
         return ends;
     }

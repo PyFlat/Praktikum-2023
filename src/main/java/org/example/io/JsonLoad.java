@@ -9,6 +9,7 @@ public class JsonLoad {
 
         try {
             JSONObject jo = new JSONObject(json);
+            preLoad(jo.getJSONArray("paths"));
             JSONArray subPaths = jo.getJSONArray("subpaths");
             parseSubPaths(subPaths);
             JSONArray ns = jo.getJSONArray("nodes");
@@ -20,6 +21,19 @@ public class JsonLoad {
             System.out.println("Failed to load json: Invalid json");
         }
 
+    }
+    private static void preLoad(JSONArray paths) {
+        new Node("PRG_END");
+        ArrayList<String> mainPathNames = new ArrayList<>();
+        paths.forEach((p)->mainPathNames.add(((JSONObject)p).getString("name")));
+        new Set("PATHS",PRIORITY.RANDOM,mainPathNames);
+        ArrayList<String> names = new ArrayList<>();
+        names.add("PATHS");names.add("PRG_END");
+        ArrayList<Integer> priority = new ArrayList<>();
+        priority.add(-1);priority.add(-1);
+        ArrayList<Float> probability = new ArrayList<>();
+        probability.add(1f);probability.add(1f);
+        new SubPath("PRG_ROOT",names,probability, priority,TYPES.NORMAL);
     }
     private static void parseNodes(JSONArray nd) {
         nd.forEach((s)->new Node(s.toString()));

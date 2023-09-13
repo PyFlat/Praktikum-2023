@@ -23,4 +23,9 @@ public class Node extends Node_abstract{
     public int getLength() {
         return 1;
     }
+
+    @Override
+    public int getOpenEnds() {
+        return 1;
+    }
 }

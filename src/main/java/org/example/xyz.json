@@ -1,4 +1,12 @@
 {
+  "paths": [
+    {
+      "name":"Pfad-0"
+    },
+    {
+      "name": "Teilpfad-1"
+    }
+  ],
   "subpaths": [
     {
       "name": "Pfad-0",
@@ -9,7 +17,7 @@
     },
     {
       "name": "Teilpfad-1",
-      "names": ["Aufzug-0","Regale-top","Aufzug-0"],
+      "names": ["Aufzug-0","Regale-top"],
       "probs": [1.0,1.0,1.0],
       "capacity": [-1,-1,-1],
       "type": 0
