@@ -107,12 +107,16 @@ public class GraphFrame extends JFrame {
             if (Main.config.get("START_COLLAPSED").equals("true")) {
                 collapseAll(false);
             }
-            layout.execute(parent);
+            if (Main.config.get("USE_LAYOUT").equals("true")) {
+                layout.execute(parent);
+            }
             graph.getModel().endUpdate();
         }
         graph.addListener(mxEvent.FOLD_CELLS, (sender, evt) -> {
             try {
-                layout.execute(graph.getDefaultParent());
+                if (Main.config.get("USE_LAYOUT").equals("true")) {
+                    layout.execute(parent);
+                }
             } catch (StackOverflowError e) {System.out.println("WARNING! LAYOUT DISABLED BECAUSE OF OVERFLOW! REDUCE COMPLEXITY!");}
         });
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
@@ -311,7 +315,10 @@ public class GraphFrame extends JFrame {
         collapseAll.setAccelerator(KeyStroke.getKeyStroke('C', KeyEvent.CTRL_DOWN_MASK));
         collapseAll.addActionListener(e -> {
             collapseAll(false);
-            layout.execute(parent);
+            if (Main.config.get("USE_LAYOUT").equals("true")) {
+                layout.execute(parent);
+            }
+
         });
         menu1.add(collapseAll);
 
@@ -319,7 +326,9 @@ public class GraphFrame extends JFrame {
         expandAll.setAccelerator(KeyStroke.getKeyStroke('E',KeyEvent.CTRL_DOWN_MASK));
         expandAll.addActionListener(e -> {
             collapseAll(true);
-            layout.execute(parent);
+            if (Main.config.get("USE_LAYOUT").equals("true")) {
+                layout.execute(parent);
+            }
         });
         menu1.add(expandAll);
         mb.add(menu1);
