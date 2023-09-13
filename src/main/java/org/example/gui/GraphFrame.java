@@ -14,10 +14,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -292,23 +289,22 @@ public class GraphFrame extends JFrame {
         JMenuBar mb = new JMenuBar();
         JMenu menu1 = new JMenu("Tools");
         JMenuItem exportPng = new JMenuItem("Export as PNG");
+        exportPng.setAccelerator(KeyStroke.getKeyStroke('S', KeyEvent.CTRL_DOWN_MASK));
         exportPng.addActionListener(listener);
         menu1.add(exportPng);
 
         JMenuItem collapseAll = new JMenuItem("Collapse All");
-        collapseAll.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (int x = map.size()-1;x>-1;x--) {
-                    for (int y = map.get(x).size()-1;y>-1;y--) {
-                        if (graph.isCellFoldable(vertices.get(x).get(y),true)) {
-                            ((CustomGraph)graph).toggleSubtree(graph,vertices.get(x).get(y),false);
-                            graph.getModel().setCollapsed(vertices.get(x).get(y),true);
-                        }
+        collapseAll.setAccelerator(KeyStroke.getKeyStroke('C', KeyEvent.CTRL_DOWN_MASK));
+        collapseAll.addActionListener(e -> {
+            for (int x = map.size()-1;x>-1;x--) {
+                for (int y = map.get(x).size()-1;y>-1;y--) {
+                    if (graph.isCellFoldable(vertices.get(x).get(y),true)) {
+                        ((CustomGraph)graph).toggleSubtree(graph,vertices.get(x).get(y),false);
+                        graph.getModel().setCollapsed(vertices.get(x).get(y),true);
                     }
                 }
-                layout.execute(parent);
             }
+            layout.execute(parent);
         });
         menu1.add(collapseAll);
         mb.add(menu1);

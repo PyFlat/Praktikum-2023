@@ -4,6 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
     <groupId>org.example</groupId>
     <artifactId>Praktikum2023</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -32,5 +33,18 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.17</source> <!-- Set this to your desired Java version (e.g., 1.8 for Java 8) -->
+                    <target>1.8</target> <!-- Set this to your desired Java version (e.g., 1.8 for Java 8) -->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
