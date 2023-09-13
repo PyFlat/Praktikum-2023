@@ -4,13 +4,52 @@
       "name":"Pfad-0"
     },
     {
+      "name":"Pfad-0"
+    },
+    {
+      "name":"Pfad-0"
+    },
+    {
+      "name":"Pfad-0"
+    },
+    {
+      "name":"Pfad-0"
+    },
+    {
+      "name":"Pfad-0"
+    },
+    {
+      "name":"Pfad-0"
+    },
+    {
+      "name":"Pfad-0"
+    },
+    {
+      "name":"Pfad-0"
+    },{
+      "name":"Pfad-0"
+    },
+    {
+      "name":"Pfad-0"
+    },
+    {
+      "name":"Pfad-0"
+    },
+    {
+      "name":"Pfad-0"
+    },
+    {
+      "name":"Pfad-0"
+    },
+
+    {
       "name": "Teilpfad-1"
     }
   ],
   "subpaths": [
     {
       "name": "Pfad-0",
-      "names": ["Quelle-0","test"],
+      "names": ["Quelle-0","test","Teilpfad-2"],
       "probs": [1.0,1.0,1.0],
       "capacity": [-1,-1,-1],
       "type": 0
