@@ -7,6 +7,7 @@ import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxUtils;
 import com.mxgraph.view.mxGraph;
+import org.example.gui.events.EventHighlightListener;
 import org.example.gui.events.PopupListener;
 import org.example.gui.events.highlightListener;
 import org.example.gui.events.mouseEventProcessor;
@@ -68,7 +69,7 @@ public class GroupTest {
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
         graphComponent.setCenterZoom(true);
         graphComponent.requestFocus();
-        mouseEventProcessor p = new mouseEventProcessor(new highlightListener() {
+        mouseEventProcessor p = new mouseEventProcessor(new EventHighlightListener() {
             @Override
             public void highlightStart(Object cell) {
                 for (Object edges : graph.getEdges(cell)){

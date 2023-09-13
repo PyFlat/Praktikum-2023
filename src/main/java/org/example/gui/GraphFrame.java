@@ -6,17 +6,14 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxEvent;
 import org.example.data.*;
 import org.example.data.analysis.depthMap;
-import org.example.gui.events.CustomScrollbarUI;
-import org.example.gui.events.PopupListener;
-import org.example.gui.events.highlightListener;
-import org.example.gui.events.mouseEventProcessor;
+import org.example.gui.events.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
+import java.util.List;
 
 public class GraphFrame extends JFrame {
     private static Object parent;
@@ -29,6 +26,26 @@ public class GraphFrame extends JFrame {
 
     private static ArrayList<ArrayList<Node_abstract>> parents;
     private static ArrayList<ArrayList<Integer>> acceptMultipleInputs;
+
+    private static Node_abstract findNode(Object cell) {
+        int[] d = findCoords(cell);
+        if (d == null) return null;
+        try {
+            return nodes.get(d[0]).get(d[1]);
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+    private static int[] findCoords(Object cell) {
+        for (int x = 0; x < map.size(); x++) {
+            for (int y = 0; y < map.get(x).size(); y++) {
+                if (vertices.get(x).get(y).equals(cell)) {
+                    return new int[]{x,y};
+                }
+            }
+        }
+        return null;
+    }
 
     public static void visualize(ArrayList<ArrayList<String>> newmap) {
         //System.out.println(Arrays.toString(newmap.toArray()));
@@ -88,9 +105,60 @@ public class GraphFrame extends JFrame {
             } catch (StackOverflowError e) {System.out.println("WARNING! LAYOUT DISABLED BECAUSE OF OVERFLOW! REDUCE COMPLEXITY!");}
         });
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
-        mouseEventProcessor p = new mouseEventProcessor(new highlightListener() {
+        mouseEventProcessor p = new mouseEventProcessor(new EventHighlightListener() {
             @Override
-            public void highlightStart(Object cell) {
+            public void highlightStart(MouseEvent event, Object cell) {
+                if (findNode(cell) == depthMap.getMaxDepthStart()) {return;}
+                if (event.isShiftDown()) {
+
+                    int[] coords = findCoords(cell);
+                    Node_abstract PARENT = parents.get(coords[0]).get(coords[1]);
+                    ObjectContainer parent_vertex = new ObjectContainer();
+                    graph.traverse(cell, false, (v, e)->{
+                        if (parent_vertex.get() != null) {return false;}
+                        if (e == null) {return true;}
+                        mxCell vertex = (mxCell) v;
+                        mxCell edge = (mxCell) e;
+                        for (Object _e : graph.getOutgoingEdges(cell)) {if (_e.equals(e)) {return false;}}
+                        //System.out.println("Passed by " + vertex);
+                        if (findNode(v).equals(PARENT)) {
+                            parent_vertex.set(v);
+                            return false;
+                        }
+                        return true;
+                    });
+                    List<Object> cellsAffected = new ArrayList<>();
+                    Node_abstract parent = findNode(parent_vertex.get());
+                    int parent_x = Objects.requireNonNull(findCoords(parent_vertex.get()))[0];
+                    ArrayList<mxCell> goal  = new ArrayList<>();
+                    graph.traverse(parent_vertex.get(), true, (vertex, edge) -> {
+
+                        //System.out.println(vertex);
+                        int[] c = findCoords(vertex);
+                        if ((c != null ? c[0] : 0) >= parent_x+ (parent != null ? parent.getLength() : 0)) {
+                            goal.add((mxCell) vertex);
+                            //return false;
+                        }
+                        boolean hasPassed = false;
+                        if (edge == null) {return true;}
+                        if (((mxCell)edge).getSource().isCollapsed() && ((mxCell)edge).getSource() != parent_vertex.get() && !((mxCell)edge).getValue().equals(" ")) {
+                            return false;
+                        }
+                        if(vertex != parent_vertex.get() && !goal.contains((mxCell) vertex) /*&& (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected)*/)
+                        {
+                            cellsAffected.add(vertex);
+                            hasPassed = true;
+                        }
+                        //System.out.println("Called strange return");
+                        return vertex == parent_vertex.get() || hasPassed;
+                        //return true;
+                    });
+                    Object[] edges = graph.addAllEdges(cellsAffected.toArray());
+                    for (Object e: edges) {((mxCell)e).setStyle(((mxCell)e).getStyle().replace("strokeColor=#ccd0d9","strokeColor=#FF0000"));}
+                    ((mxCell)parent_vertex.get()).setStyle(((mxCell)parent_vertex.get()).getStyle().replace("strokeColor=#ccd0d9","strokeColor=#FF0000"));
+                    graph.refresh();
+                    return;
+                }
                 for (Object edges : graph.getEdges(cell)){
                     mxCell edge = (mxCell) edges;
                     String existingStyle = edge.getStyle();
@@ -103,15 +171,66 @@ public class GraphFrame extends JFrame {
             }
 
             @Override
-            public void highlightStop(Object cell) {
-                for (Object edges : graph.getEdges(cell)){
-                    mxCell edge = (mxCell) edges;
-                    String existingStyle = edge.getStyle();
-                    String updatedStyle = existingStyle.replaceAll("strokeColor=#FF0000", "strokeColor=#ccd0d9");
-                    updatedStyle = updatedStyle.replaceAll("strokeWidth=2", "strokeWidth=1");
-                    edge.setStyle(updatedStyle);
-                    graph.refresh();
+            public void highlightStop(MouseEvent event, Object cell) {
+                if (findNode(cell) == depthMap.getMaxDepthStart()) {return;}
+                int[] coords = findCoords(cell);
+                Node_abstract PARENT = parents.get(coords[0]).get(coords[1]);
+                ObjectContainer parent_vertex = new ObjectContainer();
+                graph.traverse(cell, false, (v, e) -> {
+                    if (parent_vertex.get() != null) {
+                        return false;
+                    }
+                    if (e == null) {
+                        return true;
+                    }
+                    mxCell vertex = (mxCell) v;
+                    mxCell edge = (mxCell) e;
+                    for (Object _e : graph.getOutgoingEdges(cell)) {
+                        if (_e.equals(e)) {
+                            return false;
+                        }
+                    }
+                    //System.out.println("Passed by " + vertex);
+                    if (findNode(v).equals(PARENT)) {
+                        parent_vertex.set(v);
+                        return false;
+                    }
+                    return true;
+                });
+                List<Object> cellsAffected = new ArrayList<>();
+                Node_abstract parent = findNode(parent_vertex.get());
+                int parent_x = Objects.requireNonNull(findCoords(parent_vertex.get()))[0];
+                ArrayList<mxCell> goal = new ArrayList<>();
+                graph.traverse(parent_vertex.get(), true, (vertex, edge) -> {
+
+                    //System.out.println(vertex);
+                    int[] c = findCoords(vertex);
+                    if ((c != null ? c[0] : 0) >= parent_x + (parent != null ? parent.getLength() : 0)) {
+                        goal.add((mxCell) vertex);
+                        //return false;
+                    }
+                    boolean hasPassed = false;
+                    if (edge == null) {
+                        return true;
+                    }
+                    if (((mxCell) edge).getSource().isCollapsed() && ((mxCell) edge).getSource() != parent_vertex.get() && !((mxCell) edge).getValue().equals(" ")) {
+                        return false;
+                    }
+                    if (vertex != parent_vertex.get() && !goal.contains((mxCell) vertex) /*&& (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected)*/) {
+                        cellsAffected.add(vertex);
+                        hasPassed = true;
+                    }
+                    //System.out.println("Called strange return");
+                    return vertex == parent_vertex.get() || hasPassed;
+                    //return true;
+                });
+                Object[] edges = graph.addAllEdges(cellsAffected.toArray());
+                for (Object e : edges) {
+                    ((mxCell) e).setStyle(((mxCell) e).getStyle().replace("strokeColor=#FF0000", "strokeColor=#ccd0d9"));
                 }
+                ((mxCell) parent_vertex.get()).setStyle(((mxCell) parent_vertex.get()).getStyle().replace("strokeColor=#FF0000", "strokeColor=#ccd0d9"));
+                graph.refresh();
+                return;
             }
         }, graphComponent);
         graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionAdapter() {

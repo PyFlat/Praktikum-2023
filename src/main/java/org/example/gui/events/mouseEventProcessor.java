@@ -9,9 +9,9 @@ public class mouseEventProcessor {
     private Object cell_current;
     private final mxGraphComponent g;
 
-    private final highlightListener l;
+    private final EventHighlightListener l;
 
-    public mouseEventProcessor(highlightListener listener, mxGraphComponent component) {
+    public mouseEventProcessor(EventHighlightListener listener, mxGraphComponent component) {
         this.g = component;
         this.l = listener;
     }
@@ -22,24 +22,18 @@ public class mouseEventProcessor {
         if (cell_current == null) {
             if (cell != null) {
                 cell_current = cell;
-                startHighlight();
+                l.highlightStart(event, cell_current);
             }
         } else {
             if (cell != null && cell != cell_current) {
-                stopHighlight();
+                l.highlightStop(event, cell_current);
                 cell_current = cell;
-                startHighlight();
+                l.highlightStart(event, cell_current);
             } else if (cell != cell_current){
-                stopHighlight();
+                l.highlightStop(event, cell_current);
                 cell_current = null;
             }
         }
 
-    }
-    public void startHighlight() {
-        l.highlightStart(cell_current);
-    }
-    public void stopHighlight() {
-        l.highlightStop(cell_current);
     }
 }
