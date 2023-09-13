@@ -5,6 +5,17 @@ import org.json.*;
 import java.util.ArrayList;
 
 public class JsonLoad {
+    private static boolean isForbidden(String value) {
+        if (value.equals("PRG_END") || value.equals("PATHS")||value.equals("PRG_ROOT")) {
+            return true;
+        }
+        return false;
+    }
+    private static void legalCheck(String value) {
+        if (isForbidden(value)) {
+            throw new IllegalAccessError("CRITICAL: " + value + " is forbidden! Forbidden values are PRG_END, PATHS and PRG_ROOT");
+        }
+    }
     public static void loadFromJson(String json) {
 
         try {
@@ -36,7 +47,7 @@ public class JsonLoad {
         new SubPath("PRG_ROOT",names,probability, priority,TYPES.NORMAL);
     }
     private static void parseNodes(JSONArray nd) {
-        nd.forEach((s)->new Node(s.toString()));
+        nd.forEach((s)->{legalCheck(s.toString());new Node(s.toString());});
     }
     private static void parseSubPaths(JSONArray sp) {
         for (int i=0;i<sp.length();i++) {
@@ -48,7 +59,7 @@ public class JsonLoad {
             nam = e.getJSONArray("probs");
             ArrayList<Float> probs = new ArrayList<>();
             nam.forEach((s)->probs.add((((java.math.BigDecimal) s).floatValue())));
-
+            legalCheck(name);
             nam = e.getJSONArray("capacity");
             ArrayList<Integer> capacity = new ArrayList<>();
             nam.forEach((s)->capacity.add((int) s));
@@ -67,6 +78,7 @@ public class JsonLoad {
         for (int i=0;i<st.length();i++) {
             JSONObject e = st.getJSONObject(i);
             String name = e.getString("name");
+            legalCheck(name);
             int priority = e.getInt("priority");
             JSONArray _names = e.getJSONArray("names");
             ArrayList<String> names = new ArrayList<>();
