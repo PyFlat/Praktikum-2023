@@ -48,11 +48,7 @@ public class SubPath extends Node_abstract implements advancedNode{
 
     @Override
     public int getOpenEnds() {
-        if (Database.t.getElement(childNodes.get(childNodes.size()-1)).type == NODETYPE.BASIC) {
-            return 1;
-        } else {
-            return ((advancedNode) Database.t.getElement(childNodes.get(childNodes.size()-1))).getOpenEnds();
-        }
+        return Database.t.getElement(childNodes.get(0)).getOpenEnds();
     }
     public ArrayList<Integer> getCapacity() {return capacity;}
     public ArrayList<Float> getProbabilities() {return probabilities;}

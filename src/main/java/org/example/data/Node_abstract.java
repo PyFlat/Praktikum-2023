@@ -35,4 +35,5 @@ public abstract class Node_abstract {
             pathlocations.put(path,loc);
         }
     }
+    public abstract int getOpenEnds();
 }

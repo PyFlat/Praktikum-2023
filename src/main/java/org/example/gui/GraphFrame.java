@@ -162,7 +162,7 @@ public class GraphFrame extends JFrame {
                         //return true;
                     });
                     Object[] edges = graph.addAllEdges(cellsAffected.toArray());
-                    for (Object e: edges) {((mxCell)e).setStyle(((mxCell)e).getStyle().replace("strokeColor=#ccd0d9","strokeColor=#FF0000"));}
+                    for (Object e: edges) {((mxCell)e).setStyle(((mxCell)e).getStyle().replace("strokeColor=#ccd0d9","strokeColor=#FF0000"));((mxCell)e).setStyle(((mxCell)e).getStyle().replace("strokeWidth=1", "strokeWidth=2"));}
                     ((mxCell)parent_vertex.get()).setStyle(((mxCell)parent_vertex.get()).getStyle().replace("strokeColor=#ccd0d9","strokeColor=#FF0000"));
                     graph.refresh();
                     return;
@@ -235,6 +235,7 @@ public class GraphFrame extends JFrame {
                 Object[] edges = graph.addAllEdges(cellsAffected.toArray());
                 for (Object e : edges) {
                     ((mxCell) e).setStyle(((mxCell) e).getStyle().replace("strokeColor=#FF0000", "strokeColor=#ccd0d9"));
+                    ((mxCell)e).setStyle(((mxCell)e).getStyle().replace("strokeWidth=2", "strokeWidth=1"));
                 }
                 ((mxCell) parent_vertex.get()).setStyle(((mxCell) parent_vertex.get()).getStyle().replace("strokeColor=#FF0000", "strokeColor=#ccd0d9"));
                 graph.refresh();
@@ -366,7 +367,7 @@ public class GraphFrame extends JFrame {
         Node_abstract prev = nh.get(_x-1);
         if (prev.type == NODETYPE.BASIC) {return 1;}
         else {
-            return ((advancedNode) prev).getOpenEnds();
+            return prev.getOpenEnds();
         }
     }
     private static int[] findParents(Node_abstract current, Node_abstract parent, int x, int y) {
