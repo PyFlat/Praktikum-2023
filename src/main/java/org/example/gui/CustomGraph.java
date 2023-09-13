@@ -74,7 +74,7 @@ public class CustomGraph extends mxGraph {
 
         return cells;
     }
-    private void toggleSubtree(mxGraph graph, Object cellSelected, boolean show)
+    void toggleSubtree(mxGraph graph, Object cellSelected, boolean show)
     {
         List<Object> cellsAffected = new ArrayList<>();
         Node_abstract parent = findNode(cellSelected);

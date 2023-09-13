@@ -26,6 +26,7 @@ import java.util.List;
 
 public class GraphFrame extends JFrame {
     private static Object parent;
+    private static mxHierarchicalLayout layout;
     private static CustomGraph graph;
     private static ArrayList<ArrayList<Object>> vertices;
 
@@ -62,7 +63,7 @@ public class GraphFrame extends JFrame {
         graph = new CustomGraph();
         parent = graph.getDefaultParent();
         graph.getModel().beginUpdate();
-        mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
+        layout = new mxHierarchicalLayout(graph);
         layout.setOrientation(7);
         graph.setEdgeLabelsMovable(false);
         graph.setCellsEditable(false);
@@ -298,7 +299,15 @@ public class GraphFrame extends JFrame {
         collapseAll.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                for (int x = map.size()-1;x>-1;x--) {
+                    for (int y = map.get(x).size()-1;y>-1;y--) {
+                        if (graph.isCellFoldable(vertices.get(x).get(y),true)) {
+                            ((CustomGraph)graph).toggleSubtree(graph,vertices.get(x).get(y),false);
+                            graph.getModel().setCollapsed(vertices.get(x).get(y),true);
+                        }
+                    }
+                }
+                layout.execute(parent);
             }
         });
         menu1.add(collapseAll);
