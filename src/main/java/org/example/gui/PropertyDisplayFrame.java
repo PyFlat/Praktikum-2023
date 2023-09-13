@@ -48,27 +48,22 @@ public class PropertyDisplayFrame extends JFrame {
         Node_abstract parent = findNode(cell);
         addProperty(parent.type==NODETYPE.SUBPATH ? 4 : 2, "Name", parent.getName());
         addProperty(parent.type==NODETYPE.SUBPATH ? 4 : 2,"Type",capitalize(parent.type.name()));
-        switch (parent.type) {
-            case BASIC:
-                break;
-            case SET:
-                addProperty(2,"Priority", capitalize(((Set)parent).getPriority().name()));
-                addProperty(2,"Children (" + ((advancedNode)parent).getChildNodes().size() + ")");
-                ((advancedNode)parent).getChildNodes().forEach((c)->addProperty(2,Database.t.getElement(c).getName(),capitalize(Database.t.getElement(c).type.name())));
-                break;
-            case SUBPATH:
-                addProperty(4,"Arrangement",capitalize(((SubPath)parent).getPathtype().name()));
-                addProperty(4,"Children (" + ((advancedNode)parent).getChildNodes().size() + ")");
-                addProperty(4,"Name","Type","Capacity","Probability");
-                for (int i = 0; i< ((advancedNode)parent).getChildNodes().size();i++) {
-                    Node_abstract element = Database.t.getElement(((advancedNode)parent).getChildNodes().get(i));
-                    String name = element.getName();
-                    String type = capitalize(element.type.name());
-                    String prob = "" + ((SubPath)parent).getProbabilities().get(i);
-                    String capa = "" + ((SubPath)parent).getCapacity().get(i);
-                    addProperty(4,name,type,capa,prob);
-                }
-                break;
+        if (parent.type == NODETYPE.SET) {
+            addProperty(2,"Priority", capitalize(((Set)parent).getPriority().name()));
+            addProperty(2,"Children (" + ((advancedNode)parent).getChildNodes().size() + ")");
+            ((advancedNode)parent).getChildNodes().forEach((c)->addProperty(2,Database.t.getElement(c).getName(),capitalize(Database.t.getElement(c).type.name())));
+        } else if (parent.type == NODETYPE.SUBPATH) {
+            addProperty(4,"Arrangement",capitalize(((SubPath)parent).getPathtype().name()));
+            addProperty(4,"Children (" + ((advancedNode)parent).getChildNodes().size() + ")");
+            addProperty(4,"Name","Type","Capacity","Probability");
+            for (int i = 0; i< ((advancedNode)parent).getChildNodes().size();i++) {
+                Node_abstract element = Database.t.getElement(((advancedNode)parent).getChildNodes().get(i));
+                String name = element.getName();
+                String type = capitalize(element.type.name());
+                String prob = "" + ((SubPath)parent).getProbabilities().get(i);
+                String capa = "" + ((SubPath)parent).getCapacity().get(i);
+                addProperty(4,name,type,capa,prob);
+            }
         }
         JScrollPane scrollPane = new JScrollPane(panel);
         add(scrollPane);
