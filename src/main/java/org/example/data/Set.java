@@ -15,12 +15,12 @@ public class Set extends Node_abstract implements advancedNode{
         this.priority = priority;
     }
     public PRIORITY getPriority() {
-        return priority;
+        return this.priority;
     }
     @Override
     public void unpack() {
-        while (!names.isEmpty()) {
-            this.childNodes.add(Database.t.getIndexByKey(names.remove(names.size()-1)));
+        while (!this.names.isEmpty()) {
+            this.childNodes.add(Database.t.getIndexByKey(this.names.remove(this.names.size()-1)));
         }
     }
 
@@ -31,25 +31,25 @@ public class Set extends Node_abstract implements advancedNode{
 
     @Override
     public void calculateLength() {
-        length = 1;
+        this.length = 1;
         this.childNodes.forEach((e)->isMaxLength(Database.t.getElement(e).getLength()));
     }
-    private void isMaxLength(int l) {
-        if (l+1 > length) {
-            length = l+1;
+    private void isMaxLength(int newLength) {
+        if (newLength+1 > this.length) {
+            this.length = newLength+1;
         }
     }
     @Override
     public ArrayList<Integer> getChildNodes() {
-        return childNodes;
+        return this.childNodes;
     }
 
     @Override
     public int getOpenEnds() {
         int ends = 0;
-        for (int i: childNodes) {
-            Node_abstract n = Database.t.getElement(i);
-            ends += n.getOpenEnds();
+        for (int childIndex: this.childNodes) {
+            Node_abstract child = Database.t.getElement(childIndex);
+            ends += child.getOpenEnds();
         }
         return ends;
     }

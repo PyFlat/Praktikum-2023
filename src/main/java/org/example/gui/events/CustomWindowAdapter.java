@@ -12,6 +12,6 @@ public class CustomWindowAdapter extends WindowAdapter {
     }
     @Override
     public void windowClosing(WindowEvent e) {
-        this.parent.discardPopup(target);
+        this.parent.discardPopup(this.target);
     }
 }

@@ -7,33 +7,32 @@ import com.mxgraph.swing.mxGraphComponent;
 
 public class mouseEventProcessor {
     private Object cell_current;
-    private final mxGraphComponent g;
+    private final mxGraphComponent graphComponent;
 
-    private final EventHighlightListener l;
+    private final EventHighlightListener highlightListener;
 
     public mouseEventProcessor(EventHighlightListener listener, mxGraphComponent component) {
-        this.g = component;
-        this.l = listener;
+        this.graphComponent = component;
+        this.highlightListener = listener;
     }
     public void processEvent(MouseEvent event) {
-        Object cell = g.getCellAt(event.getX(),event.getY());
+        Object cell = this.graphComponent.getCellAt(event.getX(),event.getY());
         if (!(cell instanceof mxCell)) {cell = null;}
         if (cell != null && !((mxCell) cell).isVertex()) {cell = null;}
-        if (cell_current == null) {
+        if (this.cell_current == null) {
             if (cell != null) {
-                cell_current = cell;
-                l.highlightStart(event, cell_current);
+                this.cell_current = cell;
+                this.highlightListener.highlightStart(event, this.cell_current);
             }
-        } else {
-            if (cell != null && cell != cell_current) {
-                l.highlightStop(event, cell_current);
-                cell_current = cell;
-                l.highlightStart(event, cell_current);
-            } else if (cell != cell_current){
-                l.highlightStop(event, cell_current);
-                cell_current = null;
-            }
+            return;
         }
-
+        if (cell != null && cell != this.cell_current) {
+            this.highlightListener.highlightStop(event, this.cell_current);
+            this.cell_current = cell;
+            this.highlightListener.highlightStart(event, this.cell_current);
+        } else if (cell != this.cell_current){
+            this.highlightListener.highlightStop(event, this.cell_current);
+            this.cell_current = null;
+        }
     }
 }

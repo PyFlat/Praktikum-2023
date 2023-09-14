@@ -13,79 +13,74 @@ public class JsonLoad {
             throw new IllegalAccessError("CRITICAL: " + value + " is forbidden! Forbidden values are PRG_END, PATHS and PRG_ROOT");
         }
     }
-    public static void loadFromJson(String json) {
+    public static void loadFromJson(String jsonString) {
 
         try {
-            JSONObject jo = new JSONObject(json);
-            preLoad(jo.getJSONArray("paths"));
-            JSONArray subPaths = jo.getJSONArray("subpaths");
+            JSONObject jsonObject = new JSONObject(jsonString);
+            preLoad(jsonObject.getJSONArray("paths"));
+            JSONArray subPaths = jsonObject.getJSONArray("subpaths");
             parseSubPaths(subPaths);
-            JSONArray ns = jo.getJSONArray("nodes");
-            parseNodes(ns);
-            JSONArray st = jo.getJSONArray("sets");
-            parseSets(st);
+            JSONArray nodes = jsonObject.getJSONArray("nodes");
+            parseNodes(nodes);
+            JSONArray sets = jsonObject.getJSONArray("sets");
+            parseSets(sets);
 
         }catch (JSONException e) {
             System.out.println("Failed to load json: Invalid json");
         }
-
     }
     private static void preLoad(JSONArray paths) {
         new Node("PRG_END");
         ArrayList<String> mainPathNames = new ArrayList<>();
-        paths.forEach((p)->mainPathNames.add(((JSONObject)p).getString("name")));
+        paths.forEach((path)->mainPathNames.add(((JSONObject)path).getString("name")));
         new Set("PATHS",PRIORITY.RANDOM,mainPathNames);
         ArrayList<String> names = new ArrayList<>();
-        names.add("PATHS");names.add("PRG_END");
+        names.add("PATHS");
+        names.add("PRG_END");
         ArrayList<Integer> priority = new ArrayList<>();
-        priority.add(-1);priority.add(-1);
+        priority.add(-1);
+        priority.add(-1);
         ArrayList<Float> probability = new ArrayList<>();
-        probability.add(1f);probability.add(1f);
+        probability.add(1f);
+        probability.add(1f);
         new SubPath("PRG_ROOT",names,probability, priority,TYPES.NORMAL);
     }
-    private static void parseNodes(JSONArray nd) {
-        nd.forEach((s)->{legalCheck(s.toString());new Node(s.toString());});
+    private static void parseNodes(JSONArray nodes) {
+        nodes.forEach((name)->{
+            legalCheck(name.toString());
+            new Node(name.toString());
+        });
     }
-    private static void parseSubPaths(JSONArray sp) {
-        for (int i=0;i<sp.length();i++) {
-            JSONObject e = sp.getJSONObject(i);
-            String name = e.getString("name");
-            JSONArray nam = e.getJSONArray("names");
-            ArrayList<String> names = new ArrayList<>();
-            nam.forEach((s)->names.add(s.toString()));
-            nam = e.getJSONArray("probs");
-            ArrayList<Float> probs = new ArrayList<>();
-            nam.forEach((s)->probs.add((((java.math.BigDecimal) s).floatValue())));
+    private static void parseSubPaths(JSONArray subPaths) {
+        for (int i=0;i<subPaths.length();i++) {
+            JSONObject subPath = subPaths.getJSONObject(i);
+            String name = subPath.getString("name");
             legalCheck(name);
-            nam = e.getJSONArray("capacity");
+            final JSONArray jsonNames = subPath.getJSONArray("names");
+            ArrayList<String> names = new ArrayList<>();
+            jsonNames.forEach((jsonName)->names.add(jsonName.toString()));
+            final JSONArray jsonProbabilities = subPath.getJSONArray("probs");
+            ArrayList<Float> probabilities = new ArrayList<>();
+            jsonProbabilities.forEach((jsonProbability)->probabilities.add((((java.math.BigDecimal) jsonProbability).floatValue())));
+            final JSONArray jsonCapacities = subPath.getJSONArray("capacity");
             ArrayList<Integer> capacity = new ArrayList<>();
-            nam.forEach((s)->capacity.add((int) s));
-
-            int type = e.getInt("type");
-            TYPES[] tl = new TYPES[] {TYPES.NORMAL,TYPES.RANDOM};
-            SubPath p = new  SubPath(name,names,probs,capacity,tl[type]);
-            int _i=0;
-            while (p.getIndex() == -1) {
-                p = new  SubPath(name + "(" + _i + ")",names,probs,capacity,tl[type]);
-                _i += 1;
-            }
+            jsonCapacities.forEach((jsonCapacity)->capacity.add((int) jsonCapacity));
+            int typeIndex = subPath.getInt("type");
+            TYPES[] typeList = new TYPES[] {TYPES.NORMAL,TYPES.RANDOM};
+            new  SubPath(name,names,probabilities,capacity,typeList[typeIndex]);
         }
     }
-    private static void parseSets(JSONArray st) {
-        for (int i=0;i<st.length();i++) {
-            JSONObject e = st.getJSONObject(i);
-            String name = e.getString("name");
+    private static void parseSets(JSONArray sets) {
+        for (int i=0;i<sets.length();i++) {
+            JSONObject setJsonObject = sets.getJSONObject(i);
+            String name = setJsonObject.getString("name");
             legalCheck(name);
-            int priority = e.getInt("priority");
-            JSONArray _names = e.getJSONArray("names");
+            int priorityIndex = setJsonObject.getInt("priority");
+            JSONArray jsonNames = setJsonObject.getJSONArray("names");
             ArrayList<String> names = new ArrayList<>();
-            _names.forEach((s)->names.add((String) s));
-            PRIORITY[] pts = new PRIORITY[] {PRIORITY.CLOSEST, PRIORITY.FURTHEST, PRIORITY.SHORTEST_WAIT, PRIORITY.SHORTEST_CLOSEST_WAIT, PRIORITY.RANDOM, PRIORITY.RANDOM_EMPTY, PRIORITY.LOWEST_FREQ};
-            //new SET(name,pts[priority],names);
-            Set p = new  Set(name,pts[priority],names);
-            while (p.getIndex() == -1) {
-                p = new  Set(name,pts[priority],names);
-            }
+            jsonNames.forEach((jsonName)->names.add((String) jsonName));
+            PRIORITY[] priorityList = new PRIORITY[] {PRIORITY.CLOSEST, PRIORITY.FURTHEST, PRIORITY.SHORTEST_WAIT, PRIORITY.SHORTEST_CLOSEST_WAIT, PRIORITY.RANDOM, PRIORITY.RANDOM_EMPTY, PRIORITY.LOWEST_FREQ};
+            new  Set(name,priorityList[priorityIndex],names);
         }
     }
 }

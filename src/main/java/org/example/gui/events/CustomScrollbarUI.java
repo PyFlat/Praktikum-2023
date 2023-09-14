@@ -8,18 +8,18 @@ public class CustomScrollbarUI extends BasicScrollBarUI {
 
     @Override
     protected void configureScrollBarColors() {
-        thumbColor = new Color(117, 117, 117); // Customize thumb color
-        trackColor = new Color(28, 28, 28); // Customize track color
+        this.thumbColor = new Color(117, 117, 117); // Customize thumb color
+        this.trackColor = new Color(28, 28, 28); // Customize track color
     }
 
     @Override
     protected JButton createDecreaseButton(int orientation) {
-        return createEmptyButton(); // Customize the decrease button
+        return this.createEmptyButton(); // Customize the decrease button
     }
 
     @Override
     protected JButton createIncreaseButton(int orientation) {
-        return createEmptyButton(); // Customize the increase button
+        return this.createEmptyButton(); // Customize the increase button
     }
 
     private JButton createEmptyButton() {

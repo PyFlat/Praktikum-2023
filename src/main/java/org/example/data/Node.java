@@ -4,7 +4,7 @@ public class Node extends Node_abstract{
 
     public Node(String name) {
         super(name);
-        type = NODETYPE.BASIC;
+        this.type = NODETYPE.BASIC;
     }
 
     @Override

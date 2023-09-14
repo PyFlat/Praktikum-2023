@@ -55,9 +55,8 @@ public class GraphFrame extends JFrame {
         return null;
     }
 
-    public static void visualize(ArrayList<ArrayList<String>> newmap) {
-        //System.out.println(Arrays.toString(newmap.toArray()));
-        map = newmap;
+    public static void visualize() {
+        map = depthMap.mapHorizontal();
         graph = new CustomGraph();
         parent = graph.getDefaultParent();
         graph.getModel().beginUpdate();
@@ -129,7 +128,7 @@ public class GraphFrame extends JFrame {
                     int[] coords = findCoords(cell);
                     assert coords != null;
                     Node_abstract PARENT = parents.get(coords[0]).get(coords[1]);
-                    ObjectContainer parent_vertex = new ObjectContainer();
+                    ObjectContainer<Object> parent_vertex = new ObjectContainer<>();
                     graph.traverse(cell, false, (v, e)->{
                         if (parent_vertex.get() != null) {return false;}
                         if (e == null) {return true;}
@@ -188,7 +187,7 @@ public class GraphFrame extends JFrame {
                 int[] coords = findCoords(cell);
                 assert coords != null;
                 Node_abstract PARENT = parents.get(coords[0]).get(coords[1]);
-                ObjectContainer parent_vertex = new ObjectContainer();
+                ObjectContainer<Object> parent_vertex = new ObjectContainer<>();
                 graph.traverse(cell, false, (v, e) -> {
                     if (parent_vertex.get() != null) {
                         return false;

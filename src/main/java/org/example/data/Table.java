@@ -10,44 +10,43 @@ public class Table {
 
     private int counter;
     public Table() {
-        keyMap = new HashMap<>();
-        nodes = new HashMap<>();
-        indexMap = new HashMap<>();
-        counter = -1;
+        this.keyMap = new HashMap<>();
+        this.nodes = new HashMap<>();
+        this.indexMap = new HashMap<>();
+        this.counter = -1;
     }
     public int addElement(Node_abstract element, String name) {
-        if (keyMap.containsKey(name)) {
+        if (this.keyMap.containsKey(name)) {
             return -1;
         }
-        counter += 1;
-        keyMap.put(name, counter);
-        nodes.put(counter, element);
-        indexMap.put(counter, name);
-        return counter;
+        this.counter += 1;
+        this.keyMap.put(name, this.counter);
+        this.nodes.put(this.counter, element);
+        this.indexMap.put(this.counter, name);
+        return this.counter;
     }
     public Node_abstract getElement(int index) {
-        return nodes.get(index);
+        return this.nodes.get(index);
     }
     public int getIndexByKey(String key) {
-        return keyMap.get(key);
+        return this.keyMap.get(key);
     }
     public Node_abstract getElementByKey(String key) {
-        return nodes.get(getIndexByKey(key));
+        return this.nodes.get(getIndexByKey(key));
     }
     public String getKeyByIndex(int index) {
-        return indexMap.get(index);
-    }
-    public void debug() {
-        //TODO code debug function
+        return this.indexMap.get(index);
     }
     public HashMap<Integer , Node_abstract> getNodes() {
-        return nodes;
+        return this.nodes;
     }
 
     public void unpack_all() {
-        for (Map.Entry<Integer , Node_abstract> entry : nodes.entrySet()) {
+        System.out.println("[LOG] Unpack started");
+        for (Map.Entry<Integer , Node_abstract> entry : this.nodes.entrySet()) {
             entry.getValue().unpack();
             entry.getValue().cleanup();
         }
+        System.out.println("[LOG] Unpack completed");
     }
 }

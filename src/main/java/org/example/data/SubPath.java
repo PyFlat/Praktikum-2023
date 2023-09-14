@@ -21,9 +21,9 @@ public class SubPath extends Node_abstract implements advancedNode{
 
     @Override
     public void unpack() {
-        while (!names.isEmpty()) {
-            this.childNodes.add(Database.t.getIndexByKey(names.remove(names.size()-1)));
-            Database.t.getElement(this.childNodes.get(childNodes.size()-1)).addPathLoc(this, names.size());
+        while (!this.names.isEmpty()) {
+            this.childNodes.add(Database.t.getIndexByKey(this.names.remove(this.names.size()-1)));
+            Database.t.getElement(this.childNodes.get(this.childNodes.size()-1)).addPathLoc(this, this.names.size());
         }
     }
 
@@ -34,20 +34,20 @@ public class SubPath extends Node_abstract implements advancedNode{
 
     @Override
     public void calculateLength() {
-        length = 1;
-        this.childNodes.forEach((e)->length += Database.t.getElement(e).getLength());
+        this.length = 1;
+        this.childNodes.forEach((childIndex)->this.length += Database.t.getElement(childIndex).getLength());
     }
 
     @Override
     public ArrayList<Integer> getChildNodes() {
-        return childNodes;
+        return this.childNodes;
     }
 
     @Override
     public int getOpenEnds() {
-        return Database.t.getElement(childNodes.get(0)).getOpenEnds();
+        return Database.t.getElement(this.childNodes.get(0)).getOpenEnds();
     }
-    public ArrayList<Integer> getCapacity() {return capacity;}
-    public ArrayList<Float> getProbabilities() {return probabilities;}
-    public TYPES getPathtype() {return pathtype;}
+    public ArrayList<Integer> getCapacity() {return this.capacity;}
+    public ArrayList<Float> getProbabilities() {return this.probabilities;}
+    public TYPES getPathtype() {return this.pathtype;}
 }
