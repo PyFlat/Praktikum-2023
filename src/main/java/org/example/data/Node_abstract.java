@@ -9,14 +9,14 @@ public abstract class Node_abstract {
 
     public NODETYPE type;
 
-    private HashMap<Node_abstract , Integer> pathlocations;
+    private final HashMap<Node_abstract , Integer> pathlocations;
     public Node_abstract(String name) {
         this.index = Database.t.addElement(this, name);pathlocations=new HashMap<>();
     }
     public abstract void unpack();
     public abstract void cleanup();
 
-    public abstract int calculateLength();
+    public abstract void calculateLength();
 
     public int getLength() {
         if (length == 0) {calculateLength();}

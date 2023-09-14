@@ -2,18 +2,17 @@ package org.example.gui.events;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
-import org.example.gui.GraphFrame;
 import org.example.gui.PropertyDisplayFrame;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
 
 public class PopupListener implements MouseListener {
-    private mxGraphComponent g;
-    private HashMap<Object , Boolean> popupsOpen;
-    private HashMap<Object , JFrame> popups;
+    private final mxGraphComponent g;
+    private final HashMap<Object , Boolean> popupsOpen;
+    private final HashMap<Object , JFrame> popups;
     public void discardPopup(Object cell) {
         if (popupsOpen.containsKey(cell)) {
             popupsOpen.put(cell,false);

@@ -30,10 +30,9 @@ public class Set extends Node_abstract implements advancedNode{
     }
 
     @Override
-    public int calculateLength() {
+    public void calculateLength() {
         length = 1;
         this.childNodes.forEach((e)->isMaxLength(Database.t.getElement(e).getLength()));
-        return length;
     }
     private void isMaxLength(int l) {
         if (l+1 > length) {

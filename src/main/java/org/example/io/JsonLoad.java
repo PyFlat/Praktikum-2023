@@ -6,10 +6,7 @@ import java.util.ArrayList;
 
 public class JsonLoad {
     private static boolean isForbidden(String value) {
-        if (value.equals("PRG_END") || value.equals("PATHS")||value.equals("PRG_ROOT")) {
-            return true;
-        }
-        return false;
+        return value.equals("PRG_END") || value.equals("PATHS") || value.equals("PRG_ROOT");
     }
     private static void legalCheck(String value) {
         if (isForbidden(value)) {

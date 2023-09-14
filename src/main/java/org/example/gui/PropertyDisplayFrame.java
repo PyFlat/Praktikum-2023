@@ -35,7 +35,7 @@ public class PropertyDisplayFrame extends JFrame {
         }
         return null;
     }
-    private String capitalize(String s) {return s.toUpperCase().substring(0,1)+s.toLowerCase().substring(1);}
+    private String capitalize(String s) {return s.toUpperCase().charAt(0)+s.toLowerCase().substring(1);}
     public PropertyDisplayFrame(int x, int y, Object cell) {
         setSize(400, 200);
         setMinimumSize(getSize());
@@ -46,6 +46,7 @@ public class PropertyDisplayFrame extends JFrame {
         panel.setLayout(new GridBagLayout());
 
         Node_abstract parent = findNode(cell);
+        assert parent != null;
         addProperty(parent.type==NODETYPE.SUBPATH ? 4 : 2, "Name", parent.getName());
         addProperty(parent.type==NODETYPE.SUBPATH ? 4 : 2,"Type",capitalize(parent.type.name()));
         if (parent.type == NODETYPE.SET) {

@@ -8,7 +8,7 @@ public class SubPath extends Node_abstract implements advancedNode{
     private final ArrayList<Float> probabilities;
     private final ArrayList<Integer> capacity;
     private final ArrayList<Integer> childNodes = new ArrayList<>();
-    private TYPES pathtype;
+    private final TYPES pathtype;
 
     public SubPath(String name, ArrayList<String> names, ArrayList<Float> probabilities, ArrayList<Integer> capacity, TYPES type) {
         super(name);
@@ -21,11 +21,9 @@ public class SubPath extends Node_abstract implements advancedNode{
 
     @Override
     public void unpack() {
-        int i = 0;
         while (!names.isEmpty()) {
             this.childNodes.add(Database.t.getIndexByKey(names.remove(names.size()-1)));
             Database.t.getElement(this.childNodes.get(childNodes.size()-1)).addPathLoc(this, names.size());
-            i += 1;
         }
     }
 
@@ -35,10 +33,9 @@ public class SubPath extends Node_abstract implements advancedNode{
     }
 
     @Override
-    public int calculateLength() {
+    public void calculateLength() {
         length = 1;
         this.childNodes.forEach((e)->length += Database.t.getElement(e).getLength());
-        return length;
     }
 
     @Override

@@ -37,12 +37,6 @@ public class Table {
     public String getKeyByIndex(int index) {
         return indexMap.get(index);
     }
-    public void unpackAll() {
-        for (int i=0;i<counter;i++) {
-            nodes.get(i).unpack();
-            nodes.get(i).cleanup();
-        }
-    }
     public void debug() {
         //TODO code debug function
     }

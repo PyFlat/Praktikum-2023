@@ -123,16 +123,14 @@ public class GraphFrame extends JFrame {
                 if (event.isShiftDown()) {
 
                     int[] coords = findCoords(cell);
+                    assert coords != null;
                     Node_abstract PARENT = parents.get(coords[0]).get(coords[1]);
                     ObjectContainer parent_vertex = new ObjectContainer();
                     graph.traverse(cell, false, (v, e)->{
                         if (parent_vertex.get() != null) {return false;}
                         if (e == null) {return true;}
-                        mxCell vertex = (mxCell) v;
-                        mxCell edge = (mxCell) e;
                         for (Object _e : graph.getOutgoingEdges(cell)) {if (_e.equals(e)) {return false;}}
-                        //System.out.println("Passed by " + vertex);
-                        if (findNode(v).equals(PARENT)) {
+                        if (Objects.equals(findNode(v), PARENT)) {
                             parent_vertex.set(v);
                             return false;
                         }
@@ -144,7 +142,6 @@ public class GraphFrame extends JFrame {
                     ArrayList<mxCell> goal  = new ArrayList<>();
                     graph.traverse(parent_vertex.get(), true, (vertex, edge) -> {
 
-                        //System.out.println(vertex);
                         int[] c = findCoords(vertex);
                         if ((c != null ? c[0] : 0) >= parent_x+ (parent != null ? parent.getLength() : 0)) {
                             goal.add((mxCell) vertex);
@@ -185,6 +182,7 @@ public class GraphFrame extends JFrame {
             public void highlightStop(MouseEvent event, Object cell) {
                 if (findNode(cell) == depthMap.getMaxDepthStart()) {return;}
                 int[] coords = findCoords(cell);
+                assert coords != null;
                 Node_abstract PARENT = parents.get(coords[0]).get(coords[1]);
                 ObjectContainer parent_vertex = new ObjectContainer();
                 graph.traverse(cell, false, (v, e) -> {
@@ -194,15 +192,13 @@ public class GraphFrame extends JFrame {
                     if (e == null) {
                         return true;
                     }
-                    mxCell vertex = (mxCell) v;
-                    mxCell edge = (mxCell) e;
                     for (Object _e : graph.getOutgoingEdges(cell)) {
                         if (_e.equals(e)) {
                             return false;
                         }
                     }
                     //System.out.println("Passed by " + vertex);
-                    if (findNode(v).equals(PARENT)) {
+                    if (Objects.equals(findNode(v), PARENT)) {
                         parent_vertex.set(v);
                         return false;
                     }
@@ -242,7 +238,6 @@ public class GraphFrame extends JFrame {
                 }
                 ((mxCell) parent_vertex.get()).setStyle(((mxCell) parent_vertex.get()).getStyle().replace("strokeColor=#FF0000", "strokeColor=#ccd0d9"));
                 graph.refresh();
-                return;
             }
         }, graphComponent);
         graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionAdapter() {
@@ -275,7 +270,7 @@ public class GraphFrame extends JFrame {
         for (int x = map.size()-1;x>-1;x--) {
             for (int y = map.get(x).size()-1;y>-1;y--) {
                 if (graph.isCellFoldable(vertices.get(x).get(y),!reversed)) {
-                    ((CustomGraph)graph).toggleSubtree(graph,vertices.get(x).get(y),reversed);
+                    graph.toggleSubtree(graph,vertices.get(x).get(y),reversed);
                     graph.getModel().setCollapsed(vertices.get(x).get(y),!reversed);
                 }
             }

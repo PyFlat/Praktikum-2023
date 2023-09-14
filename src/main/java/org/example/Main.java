@@ -1,7 +1,6 @@
 package org.example;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import org.example.data.Database;
 import org.example.data.analysis.depthMap;
 import org.example.gui.GraphFrame;

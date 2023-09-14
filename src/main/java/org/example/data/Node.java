@@ -14,9 +14,8 @@ public class Node extends Node_abstract{
     public void cleanup() {}
 
     @Override
-    public int calculateLength() {
+    public void calculateLength() {
         length = 1;
-        return 1;
     }
 
     @Override
