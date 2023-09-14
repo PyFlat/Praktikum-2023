@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
+import static javax.swing.SwingConstants.WEST;
+
 public class GraphFrame extends JFrame {
     private static Object parent;
     private static mxHierarchicalLayout layout;
@@ -44,7 +46,7 @@ public class GraphFrame extends JFrame {
             return null;
         }
     }
-    private static int[] findCoords(Object cell) {
+    private static int[] findCoords(Object cell) { //TODO move to utils
         for (int x = 0; x < map.size(); x++) {
             for (int y = 0; y < map.get(x).size(); y++) {
                 if (vertices.get(x).get(y).equals(cell)) {
@@ -54,40 +56,83 @@ public class GraphFrame extends JFrame {
         }
         return null;
     }
+    private static void changeCellColor(Object cell, String newColor, int newWidth) {
+        int[] coords = findCoords(cell);
+        assert coords != null;
+        Node_abstract PARENT = parents.get(coords[0]).get(coords[1]);
+        ObjectContainer<Object> parentVertexContainer = new ObjectContainer<>();
 
+        findParentVertex(cell, PARENT, parentVertexContainer);
+
+        List<Object> cellsAffected = new ArrayList<>();
+        Node_abstract parent = findNode(parentVertexContainer.get());
+        int parent_x = Objects.requireNonNull(findCoords(parentVertexContainer.get()))[0];
+        ArrayList<mxCell> goal  = new ArrayList<>();
+        graph.traverse(parentVertexContainer.get(), true, (vertex, edge) -> {
+            int[] currentCoords = findCoords(vertex);
+            if ((currentCoords != null ? currentCoords[0] : 0) >= parent_x+ (parent != null ? parent.getLength() : 0)) {
+                goal.add((mxCell) vertex);
+            }
+            boolean hasPassed = false;
+            if (edge == null) {return true;}
+            if (((mxCell)edge).getSource().isCollapsed() && ((mxCell)edge).getSource() != parentVertexContainer.get() && !((mxCell)edge).getValue().equals(" ")) {
+                return false;
+            }
+            if(vertex != parentVertexContainer.get() && !goal.contains((mxCell) vertex))
+            {
+                cellsAffected.add(vertex);
+                hasPassed = true;
+            }
+            return vertex == parentVertexContainer.get() || hasPassed;
+        });
+        Object[] edges = graph.addAllEdges(cellsAffected.toArray());
+        for (Object edge: edges) {
+            ((mxCell) edge).setStyle(((mxCell)edge).getStyle().replaceAll("strokeColor=#[0-9a-fA-F]{6}","strokeColor=" + newColor));
+            ((mxCell) edge).setStyle(((mxCell)edge).getStyle().replaceAll("strokeWidth=-?[0-9]+;","strokeWidth=" + newWidth + ";"));
+        }
+        ((mxCell) parentVertexContainer.get()).setStyle(((mxCell)parentVertexContainer.get()).getStyle().replaceAll("strokeColor=#[0-9a-fA-F]{6}","strokeColor=" + newColor));
+        ((mxCell) parentVertexContainer.get()).setStyle(((mxCell)parentVertexContainer.get()).getStyle().replaceAll("strokeWidth=-?[0-9]+;","strokeWidth=" + newWidth + ";"));
+        graph.refresh();
+    }
     public static void visualize() {
         map = depthMap.mapHorizontal();
         graph = new CustomGraph();
         parent = graph.getDefaultParent();
+
         graph.getModel().beginUpdate();
+
         layout = new mxHierarchicalLayout(graph);
-        layout.setOrientation(7);
+        layout.setOrientation(WEST);
+
         graph.setEdgeLabelsMovable(false);
         graph.setCellsEditable(false);
         graph.setAllowDanglingEdges(false);
-        //graph.setCellsMovable(false);
         graph.setCellsSelectable(false);
+
         vertices = new ArrayList<>();
         nodes = new ArrayList<>();
         acceptMultipleInputs = new ArrayList<>();
         parents = new ArrayList<>();
+
         try {
-            System.out.println("Initialized precalc");
+            System.out.println("[LOG] PreConnect tasks started");
             for (int x=0;x<map.size();x++) {
+
                 vertices.add(new ArrayList<>());
                 nodes.add(new ArrayList<>());
                 acceptMultipleInputs.add(new ArrayList<>());
                 parents.add(new ArrayList<>());
+
                 for (int y=0;y<map.get(x).size();y++) {
+                    Node_abstract node = Database.t.getElementByKey(map.get(x).get(y));
+                    nodes.get(x).add(node);
+                    NODETYPE type = node.type;
 
-
-                    Node_abstract n = Database.t.getElementByKey(map.get(x).get(y));
-                    nodes.get(x).add(n);
-                    NODETYPE type = n.type;
                     String style = "fillColor=#3c3c3c;strokeColor=#ccd0d9;fontColor=#ffffff;fontSize=12;";
                     if (type == NODETYPE.SET) {style += "rounded=1";}
                     if (type == NODETYPE.SUBPATH) {style += "";}
                     if (type == NODETYPE.BASIC) {style += "shape=ellipse";}
+
                     acceptMultipleInputs.get(x).add(1);
                     parents.get(x).add(null);
                     mxCell vertex = (mxCell) graph.insertVertex(parent, null, map.get(x).get(y),x*100+(x-1)*100+100,y*50+(y-1)*30+30,100,50, style);
@@ -99,9 +144,9 @@ public class GraphFrame extends JFrame {
             graph.vertices = vertices;
             PropertyDisplayFrame.nodes = nodes;
             PropertyDisplayFrame.vertices = vertices;
-            System.out.println("Finished precalc, started linking");
+            System.out.println("[LOG] Finished PreConnect tasks");
+            System.out.println("[LOG] Started connection tasks");
             link();
-            /**/
         } finally {
             if (Main.config.get("START_COLLAPSED").equals("true")) {
                 collapseAll(false);
@@ -111,63 +156,20 @@ public class GraphFrame extends JFrame {
             }
             graph.getModel().endUpdate();
         }
-        graph.addListener(mxEvent.FOLD_CELLS, (sender, evt) -> {
+        graph.addListener(mxEvent.FOLD_CELLS, (sender, event) -> {
             try {
                 if (Main.config.get("USE_LAYOUT").equals("true")) {
                     layout.execute(parent);
                 }
-            } catch (StackOverflowError e) {System.out.println("WARNING! LAYOUT DISABLED BECAUSE OF OVERFLOW! REDUCE COMPLEXITY!");}
+            } catch (StackOverflowError e) {System.out.println("[WARNING] WARNING! LAYOUT DISABLED BECAUSE OF OVERFLOW! REDUCE COMPLEXITY!");}
         });
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
-        mouseEventProcessor p = new mouseEventProcessor(new EventHighlightListener() {
+        mouseEventProcessor mouseEventHandler = new mouseEventProcessor(new EventHighlightListener() {
             @Override
             public void highlightStart(MouseEvent event, Object cell) {
                 if (findNode(cell) == depthMap.getMaxDepthStart()) {return;}
                 if (event.isShiftDown()) {
-
-                    int[] coords = findCoords(cell);
-                    assert coords != null;
-                    Node_abstract PARENT = parents.get(coords[0]).get(coords[1]);
-                    ObjectContainer<Object> parent_vertex = new ObjectContainer<>();
-                    graph.traverse(cell, false, (v, e)->{
-                        if (parent_vertex.get() != null) {return false;}
-                        if (e == null) {return true;}
-                        for (Object _e : graph.getOutgoingEdges(cell)) {if (_e.equals(e)) {return false;}}
-                        if (Objects.equals(findNode(v), PARENT)) {
-                            parent_vertex.set(v);
-                            return false;
-                        }
-                        return true;
-                    });
-                    List<Object> cellsAffected = new ArrayList<>();
-                    Node_abstract parent = findNode(parent_vertex.get());
-                    int parent_x = Objects.requireNonNull(findCoords(parent_vertex.get()))[0];
-                    ArrayList<mxCell> goal  = new ArrayList<>();
-                    graph.traverse(parent_vertex.get(), true, (vertex, edge) -> {
-
-                        int[] c = findCoords(vertex);
-                        if ((c != null ? c[0] : 0) >= parent_x+ (parent != null ? parent.getLength() : 0)) {
-                            goal.add((mxCell) vertex);
-                            //return false;
-                        }
-                        boolean hasPassed = false;
-                        if (edge == null) {return true;}
-                        if (((mxCell)edge).getSource().isCollapsed() && ((mxCell)edge).getSource() != parent_vertex.get() && !((mxCell)edge).getValue().equals(" ")) {
-                            return false;
-                        }
-                        if(vertex != parent_vertex.get() && !goal.contains((mxCell) vertex) /*&& (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected)*/)
-                        {
-                            cellsAffected.add(vertex);
-                            hasPassed = true;
-                        }
-                        //System.out.println("Called strange return");
-                        return vertex == parent_vertex.get() || hasPassed;
-                        //return true;
-                    });
-                    Object[] edges = graph.addAllEdges(cellsAffected.toArray());
-                    for (Object e: edges) {((mxCell)e).setStyle(((mxCell)e).getStyle().replace("strokeColor=#ccd0d9","strokeColor=#FF0000"));((mxCell)e).setStyle(((mxCell)e).getStyle().replace("strokeWidth=1", "strokeWidth=2"));}
-                    ((mxCell)parent_vertex.get()).setStyle(((mxCell)parent_vertex.get()).getStyle().replace("strokeColor=#ccd0d9","strokeColor=#FF0000"));
-                    graph.refresh();
+                    changeCellColor(cell,"#FF0000",2);
                     return;
                 }
                 for (Object edges : graph.getEdges(cell)){
@@ -184,74 +186,18 @@ public class GraphFrame extends JFrame {
             @Override
             public void highlightStop(MouseEvent event, Object cell) {
                 if (findNode(cell) == depthMap.getMaxDepthStart()) {return;}
-                int[] coords = findCoords(cell);
-                assert coords != null;
-                Node_abstract PARENT = parents.get(coords[0]).get(coords[1]);
-                ObjectContainer<Object> parent_vertex = new ObjectContainer<>();
-                graph.traverse(cell, false, (v, e) -> {
-                    if (parent_vertex.get() != null) {
-                        return false;
-                    }
-                    if (e == null) {
-                        return true;
-                    }
-                    for (Object _e : graph.getOutgoingEdges(cell)) {
-                        if (_e.equals(e)) {
-                            return false;
-                        }
-                    }
-                    //System.out.println("Passed by " + vertex);
-                    if (Objects.equals(findNode(v), PARENT)) {
-                        parent_vertex.set(v);
-                        return false;
-                    }
-                    return true;
-                });
-                List<Object> cellsAffected = new ArrayList<>();
-                Node_abstract parent = findNode(parent_vertex.get());
-                int parent_x = Objects.requireNonNull(findCoords(parent_vertex.get()))[0];
-                ArrayList<mxCell> goal = new ArrayList<>();
-                graph.traverse(parent_vertex.get(), true, (vertex, edge) -> {
-
-                    //System.out.println(vertex);
-                    int[] c = findCoords(vertex);
-                    if ((c != null ? c[0] : 0) >= parent_x + (parent != null ? parent.getLength() : 0)) {
-                        goal.add((mxCell) vertex);
-                        //return false;
-                    }
-                    boolean hasPassed = false;
-                    if (edge == null) {
-                        return true;
-                    }
-                    if (((mxCell) edge).getSource().isCollapsed() && ((mxCell) edge).getSource() != parent_vertex.get() && !((mxCell) edge).getValue().equals(" ")) {
-                        return false;
-                    }
-                    if (vertex != parent_vertex.get() && !goal.contains((mxCell) vertex) /*&& (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected)*/) {
-                        cellsAffected.add(vertex);
-                        hasPassed = true;
-                    }
-                    //System.out.println("Called strange return");
-                    return vertex == parent_vertex.get() || hasPassed;
-                    //return true;
-                });
-                Object[] edges = graph.addAllEdges(cellsAffected.toArray());
-                for (Object e : edges) {
-                    ((mxCell) e).setStyle(((mxCell) e).getStyle().replace("strokeColor=#FF0000", "strokeColor=#ccd0d9"));
-                    ((mxCell)e).setStyle(((mxCell)e).getStyle().replace("strokeWidth=2", "strokeWidth=1"));
-                }
-                ((mxCell) parent_vertex.get()).setStyle(((mxCell) parent_vertex.get()).getStyle().replace("strokeColor=#FF0000", "strokeColor=#ccd0d9"));
-                graph.refresh();
+                changeCellColor(cell,"#ccd0d9",1);
             }
         }, graphComponent);
         graphComponent.getGraphControl().addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                p.processEvent(e);
+                mouseEventHandler.processEvent(e);
             }
 
             @Override
             public void mouseDragged(MouseEvent e){
-                p.processEvent(e);
+                mouseEventHandler.processEvent(e);
             }
         });
 
@@ -262,6 +208,7 @@ public class GraphFrame extends JFrame {
         graphComponent.getVerticalScrollBar().setUnitIncrement(20);
         graphComponent.getHorizontalScrollBar().setUI(new CustomScrollbarUI());
         graphComponent.getHorizontalScrollBar().setUnitIncrement(20);
+
         GraphFrame frame = new GraphFrame();
         frame.getContentPane().add(graphComponent);
         frame.setJMenuBar(createMenuBar(frame, graph));
@@ -269,6 +216,22 @@ public class GraphFrame extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
+
+    private static void findParentVertex(Object origin, Node_abstract parent, ObjectContainer<Object> parentVertexContainer) {
+        graph.traverse(origin, false, (vertex, edge)->{
+            if (parentVertexContainer.get() != null) {return false;}
+            if (edge == null) {return true;}
+            for (Object outgoingEdge : graph.getOutgoingEdges(origin)) {
+                if (outgoingEdge.equals(edge)) {return false;}
+            }
+            if (Objects.equals(findNode(vertex), parent)) {
+                parentVertexContainer.set(vertex);
+                return false;
+            }
+            return true;
+        });
+    }
+
     private static void collapseAll(boolean reversed) {
         for (int x = map.size()-1;x>-1;x--) {
             for (int y = map.get(x).size()-1;y>-1;y--) {
@@ -328,42 +291,34 @@ public class GraphFrame extends JFrame {
         mb.add(menu1);
         return mb;
     }
-
     private static void link() {
-        ArrayList<Integer> a = new ArrayList<>();
-        //a.add(map.size()-1);
-        System.out.println("Looking for parents");
+        System.out.println("[LOG] Started parent mapping");
         findParents(depthMap.getMaxDepthStart(), null, 0,0);
         graph.parents = parents;
-        System.out.println("Found parents, start input calc");
+        System.out.println("[LOG] Finished parent mapping");
+        System.out.println("[LOG] Calculating maximum incoming connections");
         for (int x = 0; x < map.size();x++) {
             for (int y = 0; y < map.get(x).size(); y++) {
-                acceptMultipleInputs.get(x).set(y,findMaxConnections(nodes.get(x).get(y),x,y));
-                //acceptMultipleInputs.get(x).set(y,10000);
+                acceptMultipleInputs.get(x).set(y,findMaxConnections(x,y));
             }
         }
-        System.out.println("Finished input calc, started collect");
-        //System.out.println(Arrays.toString(acceptMultipleInputs.toArray()));
-        recurseiveConnect2(depthMap.getMaxDepthStart(),null,0,a, false);
-
-        System.out.println("Finished connect");
+        System.out.println("[LOG] Finished maximum incoming edge calculation");
+        System.out.println("[LOG] Connecting edges");
+        recursiveConnect();
+        System.out.println("[LOG] Finished edge connection");
     }
     private static void link_once(Object from, Object to) {
         graph.insertEdge(parent,null,"",from,to, "strokeColor=#ccd0d9;strokeWidth=1;");
     }
     private static void link_once(Node_abstract from, Node_abstract to, int cidx, int delta) {
-        //System.out.println("Connected " + from.getName() + " to " + to.getName());
         link_once(getVertex(from, cidx,false),getVertex(to, cidx+delta, true));
     }
     private static Object getVertex(Node_abstract n, int cidx, boolean to) {
         if (n == null) {return null;}
-        //for (int x = 0; x < map.size();x++) {
             for (int y=0;y<map.get(cidx).size(); y++) {
-                //System.out.println(""+ x + " "+ y + " " + graph.getIncomingEdges(vertices.get(x).get(y)).length);
-                if (map.get(cidx).get(y).equals(n.getName())) { //Muss gelten für alles
+                if (map.get(cidx).get(y).equals(n.getName())) {
                     if (to) {
                         if (graph.getIncomingEdges(vertices.get(cidx).get(y)).length < acceptMultipleInputs.get(cidx).get(y)) {
-                            //System.out.println("Created " + x + " " + y);
                             return vertices.get(cidx).get(y);
                         }
                     } else {
@@ -373,7 +328,6 @@ public class GraphFrame extends JFrame {
                         if (node.type == NODETYPE.SET) {
                             limit = ((advancedNode)node).getChildNodes().size();
                         }
-                        //System.out.println("Node: "+node.getName());
                         if (graph.getOutgoingEdges(vertex).length< limit) {
                             return vertices.get(cidx).get(y);
                         }
@@ -382,71 +336,56 @@ public class GraphFrame extends JFrame {
                 }
 
             }
-        //}
         return null;
     }
-    private static int findMaxConnections(Node_abstract current, int x, int y) {
+    private static int findMaxConnections(int x, int y) {
         if (parents.get(x).get(y) == null) {return 1;}
-        ArrayList<Integer> children = ((advancedNode) parents.get(x).get(y)).getChildNodes();
-        ArrayList<Node_abstract> nh = new ArrayList<>();
-        children.forEach((i)->nh.add(0,Database.t.getElement(i)));
-        if (parents.get(x).get(y).type == NODETYPE.SET) {
-            return 1;
-        }
+        Node_abstract current = nodes.get(x).get(y);
+        ArrayList<Integer> childIndices = ((advancedNode) parents.get(x).get(y)).getChildNodes();
+        ArrayList<Node_abstract> childNodes = new ArrayList<>();
+        childIndices.forEach((index)->childNodes.add(0,Database.t.getElement(index)));
+        if (parents.get(x).get(y).type == NODETYPE.SET) return 1;
         SubPath parent = (SubPath) parents.get(x).get(y);
-        int _x = current.getPathLoc(parent);
-        //System.out.println("HEY: " + current.getName() + " has a location in " + parent.getName() + " that is " + _x);
-        if (_x == 0) {return 1;}
-        Node_abstract prev = nh.get(_x-1);
-        if (prev.type == NODETYPE.BASIC) {return 1;}
-        else {
-            return prev.getOpenEnds();
-        }
+        int indexOnParentChildrenList = current.getPathLoc(parent);
+        if (indexOnParentChildrenList == 0) return 1;
+        Node_abstract previousChild = childNodes.get(indexOnParentChildrenList-1);
+        if (previousChild.type == NODETYPE.BASIC) return 1;
+        return previousChild.getOpenEnds();
     }
     private static int[] findParents(Node_abstract current, Node_abstract parent, int x, int y) {
-        //System.out.println("Coords: " + x+ ","+y + ":" + current.getName() + ":" + (parent != null ? parent.getName() : "null"));
-        if (x >= map.size()) {
-            //System.out.println("Failed for "+ x + "," + y + ":" + current.getName());
-            return new int[]{x,y};
-        }
-        if (y >= map.get(x).size())  {System.out.println("Failed for "+ x + "," + y + ":" + current.getName());return new int[]{x,y};}
+        if (x >= map.size()) return new int[]{x,y};
         if (current.type == NODETYPE.BASIC) {
-            int i = y;
+            int returnYValue = y;
             while (parents.get(x).get(y) != null && y < parents.get(x).size()) {
                 y += 1;
             }
             parents.get(x).set(y,parent);
-            //System.out.println("Coords: " + x+ ","+y + ":" + current.getName() + ":" + (parent != null ? parent.getName() : "null"));
-            return new int[]{x,i};
+            return new int[]{x,returnYValue};
         }
         if (current.type == NODETYPE.SUBPATH) {
-            int i = y;
+            int tempYValue = y;
             while (parents.get(x).get(y) != null) {
                 y += 1;
             }
-
             parents.get(x).set(y,parent);
-            //System.out.println("Coords: " + x+ ","+y + ":" + current.getName() + ":" + (parent != null ? parent.getName() : "null"));
-            y = i;
+            y = tempYValue;
             ArrayList<Node_abstract> children= new ArrayList<>();
-            ((advancedNode) current).getChildNodes().forEach((j)->children.add(Database.t.getElement(j)));
-            Collections.reverse(children);
+            ((advancedNode) current).getChildNodes().forEach((j)->children.add(0,Database.t.getElement(j)));
+            //Collections.reverse(children);
             for (Node_abstract child : children) {
-                 int[] cd = findParents(child,current, x+1, y);
-                 x = cd[0];
+                 int[] coords = findParents(child,current, x+1, y);
+                 x = coords[0];
             }
         }
         if (current.type == NODETYPE.SET) {
-            int  j= y;
+            int  tempYValue= y;
             while (parents.get(x).get(y) != null) {
                 y += 1;
             }
             parents.get(x).set(y,parent);
-            //System.out.println("Coords: " + x+ ","+y + ":" + current.getName() + ":" + (parent != null ? parent.getName() : "null"));
-            y = j;
+            y = tempYValue;
             ArrayList<Node_abstract> children= new ArrayList<>();
-            ((advancedNode) current).getChildNodes().forEach((i)->children.add(Database.t.getElement(i)));
-            Collections.reverse(children);
+            ((advancedNode) current).getChildNodes().forEach((i)->children.add(0,Database.t.getElement(i)));
             for (Node_abstract child : children) {
                 findParents(child, current, x + 1, y);
             }
@@ -454,7 +393,11 @@ public class GraphFrame extends JFrame {
         }
         return new int[]{x,y};
     }
-    private static int recurseiveConnect2(Node_abstract current, Node_abstract linkTo, int cidx, ArrayList<Integer> destinations, boolean destinationOverride) {
+    private static void recursiveConnect() {
+        ArrayList<Integer> destinations = new ArrayList<>();
+        recursiveConnect(depthMap.getMaxDepthStart(),null,0,destinations, false);
+    }
+    private static int recursiveConnect(Node_abstract current, Node_abstract linkTo, int cidx, ArrayList<Integer> destinations, boolean destinationOverride) {
         if (current.type == NODETYPE.BASIC) {
             if (destinationOverride) {
                 link_once(current, linkTo, cidx, 1);
@@ -477,7 +420,6 @@ public class GraphFrame extends JFrame {
             return cidx;
         }
         if (current.type == NODETYPE.SUBPATH) {
-            //System.out.println("Entered subpath " + current.getName());
             ArrayList<Integer> children = ((advancedNode) current).getChildNodes();
             ArrayList<Node_abstract> node_children = new ArrayList<>();
             children.forEach((e)->node_children.add(Database.t.getElement(e)));
@@ -485,30 +427,25 @@ public class GraphFrame extends JFrame {
             link_once(current,node_children.get(0),cidx,1);
             for (int i=0;i<node_children.size();i++) {
                 if (i == node_children.size()-1) {
-                    cidx = recurseiveConnect2(node_children.get(i),linkTo,cidx+1, destinations, false);
+                    cidx = recursiveConnect(node_children.get(i),linkTo,cidx+1, destinations, false);
                     return cidx;
-                    //System.out.println("Path "+current.getName() +" failed to end");
                 } else {
-                    cidx = recurseiveConnect2(node_children.get(i),node_children.get(i+1),cidx+1, destinations, true);
+                    cidx = recursiveConnect(node_children.get(i),node_children.get(i+1),cidx+1, destinations, true);
                 }
             }
         }
         if (current.type == NODETYPE.SET) {
-            //System.out.println("Added set " + current.getName());
             destinations.add(cidx+ current.getLength());
             ArrayList<Integer> children = ((advancedNode) current).getChildNodes();
             Collections.reverse(children);
-            //System.out.println("Children of " + current.getName() + ": " + Arrays.toString(children.toArray()));
             for (Integer child : children) {
                 link_once(current, Database.t.getElement(child), cidx,1);
-                recurseiveConnect2(Database.t.getElement(child),linkTo, cidx + 1, destinations, false);
+                recursiveConnect(Database.t.getElement(child),linkTo, cidx + 1, destinations, false);
             }
             destinations.remove(destinations.size()-1);
-            //System.out.println("Left set " + current.getName());
             cidx += current.getLength()-1;
             return cidx;
         }
         return 0;
     }
-
 }

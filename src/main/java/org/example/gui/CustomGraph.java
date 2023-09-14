@@ -14,12 +14,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class CustomGraph extends mxGraph {
-    private final HashMap<Object , Object> connections = new HashMap<>(); // <from , to>
-
+    private final HashMap<Object , Object> connections = new HashMap<>();
     public ArrayList<ArrayList<String>> map;
     public ArrayList<ArrayList<Node_abstract>> nodes;
     public ArrayList<ArrayList<Object>> vertices;
-
     public ArrayList<ArrayList<Node_abstract>> parents;
 
     @Override
@@ -28,18 +26,14 @@ public class CustomGraph extends mxGraph {
     }
 
     private Node_abstract findNode(Object cell) {
-        int[] d = findCoords(cell);
-        if (d == null) return null;
-        try {
-            return nodes.get(d[0]).get(d[1]);
-        } catch (NullPointerException e) {
-            return null;
-        }
+        int[] coords = findCoords(cell);
+        if (coords == null) return null;
+        return this.nodes.get(coords[0]).get(coords[1]);
     }
     private int[] findCoords(Object cell) {
-        for (int x = 0; x < map.size(); x++) {
-            for (int y = 0; y < map.get(x).size(); y++) {
-                if (vertices.get(x).get(y).equals(cell)) {
+        for (int x = 0; x < this.map.size(); x++) {
+            for (int y = 0; y < this.map.get(x).size(); y++) {
+                if (this.vertices.get(x).get(y).equals(cell)) {
                     return new int[]{x,y};
                 }
             }
@@ -83,50 +77,41 @@ public class CustomGraph extends mxGraph {
 
         graph.traverse(cellSelected, true, (vertex, edge) -> {
 
-            //System.out.println(vertex);
-            int[] c = findCoords(vertex);
-            if ((c != null ? c[0] : 0) >= parent_x+ (parent != null ? parent.getLength() : 0)) {
+            int[] coords = findCoords(vertex);
+            if ((coords != null ? coords[0] : 0) >= parent_x+ (parent != null ? parent.getLength() : 0)) {
                 goal.add((mxCell) vertex);
-                //return false;
             }
             boolean hasPassed = false;
             if (edge == null) {return true;}
             if (((mxCell)edge).getSource().isCollapsed() && ((mxCell)edge).getSource() != cellSelected && !((mxCell)edge).getValue().equals(" ")) {
                 return false;
             }
-            if(vertex != cellSelected && !goal.contains((mxCell) vertex) /*&& (!graph.isCellCollapsed(((mxCell)edge).getSource()) || ((mxCell)edge).getSource() == cellSelected)*/)
+            if(vertex != cellSelected && !goal.contains((mxCell) vertex))
             {
                 cellsAffected.add(vertex);
                 hasPassed = true;
             }
-            //System.out.println("Called strange return");
-            return vertex == cellSelected || connections.containsValue(edge) || hasPassed;
-            //return true;
+            return vertex == cellSelected || this.connections.containsValue(edge) || hasPassed;
         });
-        //System.out.println(Arrays.toString(goal.toArray()));
         try {
-            //System.out.println(goal.get(0));
             graph.toggleCells(show, cellsAffected.toArray(), true);
 
-            if (!show) { //TODO find way to remove hardcoded " "
-                if (!connections.containsKey(cellSelected)) {
-                    connections.put(cellSelected, graph.insertEdge(graph.getDefaultParent(), null, " ", cellSelected, goal.get(0), "strokeColor=#ccd0d9;strokeWidth=1;"));
-                    //System.out.println(Arrays.toString(graph.getOutgoingEdges(cellSelected)));
+            if (!show) {
+                if (!this.connections.containsKey(cellSelected)) {
+                    this.connections.put(cellSelected, graph.insertEdge(graph.getDefaultParent(), null, " ", cellSelected, goal.get(0), "strokeColor=#ccd0d9;strokeWidth=1;"));
                     graph.repaint();
                 }
             } else {
-                if (connections.containsKey(cellSelected)) {
-                    graph.getModel().remove(connections.get(cellSelected));
-                    connections.remove(cellSelected);
+                if (this.connections.containsKey(cellSelected)) {
+                    graph.getModel().remove(this.connections.get(cellSelected));
+                    this.connections.remove(cellSelected);
                 }
             }
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("ERROR, CANNOT FIND GOAL :(");
-        }
+        } catch (IndexOutOfBoundsException ignored) {}
     }
-
     public static void main(String[] args){
-        org.example.Main.main(args);
+        System.out.println("You stupid, wrong class");
+        System.exit(1);
     }
 
 }
