@@ -7,6 +7,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import static java.awt.GridBagConstraints.LINE_START;
+import static org.example.gui.guiUtils.findNode;
 
 public class PropertyDisplayFrame extends JFrame {
     private final JPanel panel;
@@ -16,26 +17,7 @@ public class PropertyDisplayFrame extends JFrame {
 
     public static ArrayList<ArrayList<Object>> vertices;
 
-    private Node_abstract findNode(Object cell) {
-        int[] d = findCoords(cell);
-        if (d == null) return null;
-        try {
-            return nodes.get(d[0]).get(d[1]);
-        } catch (NullPointerException e) {
-            return null;
-        }
-    } //TODO move to utils
-    private int[] findCoords(Object cell) {
-        for (int x = 0; x < vertices.size(); x++) {
-            for (int y = 0; y < vertices.get(x).size(); y++) {
-                if (vertices.get(x).get(y).equals(cell)) {
-                    return new int[]{x,y};
-                }
-            }
-        }
-        return null;
-    } //TODO move to utils
-    private String capitalize(String s) {return s.toUpperCase().charAt(0)+s.toLowerCase().substring(1);} //TODO move to utils
+    private String capitalize(String s) {return s.toUpperCase().charAt(0)+s.toLowerCase().substring(1);}
     public PropertyDisplayFrame(int x, int y, Object cell) {
         setSize(400, 200);
         setMinimumSize(getSize());
@@ -45,7 +27,7 @@ public class PropertyDisplayFrame extends JFrame {
         this.panel = new JPanel();
         this.panel.setLayout(new GridBagLayout());
 
-        Node_abstract parent = findNode(cell);
+        Node_abstract parent = findNode(cell,nodes,vertices);
         assert parent != null;
         this.addProperty(parent.type==NODETYPE.SUBPATH ? 4 : 2, "Name", parent.getName());
         this.addProperty(parent.type==NODETYPE.SUBPATH ? 4 : 2,"Type",capitalize(parent.type.name()));

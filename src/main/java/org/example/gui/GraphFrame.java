@@ -23,6 +23,8 @@ import java.util.*;
 import java.util.List;
 
 import static javax.swing.SwingConstants.WEST;
+import static org.example.gui.guiUtils.findCoords;
+import static org.example.gui.guiUtils.findNode;
 
 public class GraphFrame extends JFrame {
     private static Object parent;
@@ -37,27 +39,8 @@ public class GraphFrame extends JFrame {
     private static ArrayList<ArrayList<Node_abstract>> parents;
     private static ArrayList<ArrayList<Integer>> acceptMultipleInputs;
 
-    private static Node_abstract findNode(Object cell) {
-        int[] d = findCoords(cell);
-        if (d == null) return null;
-        try {
-            return nodes.get(d[0]).get(d[1]);
-        } catch (NullPointerException e) {
-            return null;
-        }
-    }
-    private static int[] findCoords(Object cell) { //TODO move to utils
-        for (int x = 0; x < map.size(); x++) {
-            for (int y = 0; y < map.get(x).size(); y++) {
-                if (vertices.get(x).get(y).equals(cell)) {
-                    return new int[]{x,y};
-                }
-            }
-        }
-        return null;
-    }
     private static void changeCellColor(Object cell, String newColor, int newWidth) {
-        int[] coords = findCoords(cell);
+        int[] coords = findCoords(cell,vertices);
         assert coords != null;
         Node_abstract PARENT = parents.get(coords[0]).get(coords[1]);
         ObjectContainer<Object> parentVertexContainer = new ObjectContainer<>();
@@ -65,11 +48,11 @@ public class GraphFrame extends JFrame {
         findParentVertex(cell, PARENT, parentVertexContainer);
 
         List<Object> cellsAffected = new ArrayList<>();
-        Node_abstract parent = findNode(parentVertexContainer.get());
-        int parent_x = Objects.requireNonNull(findCoords(parentVertexContainer.get()))[0];
+        Node_abstract parent = findNode(parentVertexContainer.get(),nodes,vertices);
+        int parent_x = Objects.requireNonNull(findCoords(parentVertexContainer.get(),vertices))[0];
         ArrayList<mxCell> goal  = new ArrayList<>();
         graph.traverse(parentVertexContainer.get(), true, (vertex, edge) -> {
-            int[] currentCoords = findCoords(vertex);
+            int[] currentCoords = findCoords(vertex,vertices);
             if ((currentCoords != null ? currentCoords[0] : 0) >= parent_x+ (parent != null ? parent.getLength() : 0)) {
                 goal.add((mxCell) vertex);
             }
@@ -167,7 +150,7 @@ public class GraphFrame extends JFrame {
         mouseEventProcessor mouseEventHandler = new mouseEventProcessor(new EventHighlightListener() {
             @Override
             public void highlightStart(MouseEvent event, Object cell) {
-                if (findNode(cell) == depthMap.getMaxDepthStart()) {return;}
+                if (findNode(cell,nodes,vertices) == depthMap.getMaxDepthStart()) {return;}
                 if (event.isShiftDown()) {
                     changeCellColor(cell,"#FF0000",2);
                     return;
@@ -178,14 +161,13 @@ public class GraphFrame extends JFrame {
                     String updatedStyle = existingStyle.replaceAll("strokeColor=#ccd0d9", "strokeColor=#FF0000");
                     updatedStyle = updatedStyle.replaceAll("strokeWidth=1", "strokeWidth=2");
                     edge.setStyle(updatedStyle);
-                    graph.refresh();
                 }
-
+                graph.refresh();
             }
 
             @Override
             public void highlightStop(MouseEvent event, Object cell) {
-                if (findNode(cell) == depthMap.getMaxDepthStart()) {return;}
+                if (findNode(cell,nodes,vertices) == depthMap.getMaxDepthStart()) {return;}
                 changeCellColor(cell,"#ccd0d9",1);
             }
         }, graphComponent);
@@ -224,7 +206,7 @@ public class GraphFrame extends JFrame {
             for (Object outgoingEdge : graph.getOutgoingEdges(origin)) {
                 if (outgoingEdge.equals(edge)) {return false;}
             }
-            if (Objects.equals(findNode(vertex), parent)) {
+            if (Objects.equals(findNode(vertex,nodes,vertices), parent)) {
                 parentVertexContainer.set(vertex);
                 return false;
             }
@@ -343,7 +325,8 @@ public class GraphFrame extends JFrame {
         Node_abstract current = nodes.get(x).get(y);
         ArrayList<Integer> childIndices = ((advancedNode) parents.get(x).get(y)).getChildNodes();
         ArrayList<Node_abstract> childNodes = new ArrayList<>();
-        childIndices.forEach((index)->childNodes.add(0,Database.t.getElement(index)));
+        childIndices.forEach((index)->childNodes.add(Database.t.getElement(index)));
+        Collections.reverse(childNodes);
         if (parents.get(x).get(y).type == NODETYPE.SET) return 1;
         SubPath parent = (SubPath) parents.get(x).get(y);
         int indexOnParentChildrenList = current.getPathLoc(parent);
@@ -370,8 +353,8 @@ public class GraphFrame extends JFrame {
             parents.get(x).set(y,parent);
             y = tempYValue;
             ArrayList<Node_abstract> children= new ArrayList<>();
-            ((advancedNode) current).getChildNodes().forEach((j)->children.add(0,Database.t.getElement(j)));
-            //Collections.reverse(children);
+            ((advancedNode) current).getChildNodes().forEach((j)->children.add(Database.t.getElement(j)));
+            Collections.reverse(children);
             for (Node_abstract child : children) {
                  int[] coords = findParents(child,current, x+1, y);
                  x = coords[0];
