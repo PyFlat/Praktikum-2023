@@ -1,7 +1,7 @@
 # <center>Praktikum-2023</center>
 
 ## Description
-Can be used to visualize the hirarchical structure of paths in the software crowd:it by accu:rate (📍 Germany)
+Can be used to visualize the hierarchical structure of paths in the software crowd:it by accu:rate (📍 Germany)
 
 ## Usage
 To use this software, first clone the GitHub repo and navigate to out/artifacts/Praktikum2023_jar. You will find three files located there:
@@ -81,20 +81,20 @@ Configure the json with the following structure.
 * Every String except for these: PRG_ROOT, PATHS, PRG_END
 
 ### <a name="names-section"></a>Possible Values for *names*:
-* All names of nodes, subpaths or sets
+* All names of nodes, sub-paths or sets
 * _**Warning**_ Looping causes errors
 
-### Possible Values for *capacity* (Subpath only):
+### Possible Values for *capacity* (Sub-path only):
 * All integers (Length of list has to be the same as **[names](#names-section)** list)
 
-### Possible Values for *probs* (Subpath only):
+### Possible Values for *probs* (Sub-path only):
 * All floats (Length of list has to be the same as **[names](#names-section)** list)
 
-### Possible Values for *type* (Subpath only):
+### Possible Values for *type* (Sub-path only):
 <table>
   <tr>
     <th>Integer</th>
-    <th>Subpath Type</th>
+    <th>Sub-path Type</th>
   </tr>
   <tr>
     <td>0</td>
@@ -144,10 +144,10 @@ Configure the json with the following structure.
 
 ## Tools & Shortcuts
 
-The following tools are avaliable:
-* Collapse all (Strg + C)
-* Expand all (Strg + E)
-* Save as png (Strg + S)
-* Save as svg (Strg + V)
+The following tools are available:
+* Save as png (Ctrl + S)
+* Save as svg (Ctrl + V)
+* Collapse all (Ctrl + C)
+* Expand all (Ctrl + E)
 
 All tools are accessible under the tools menu
