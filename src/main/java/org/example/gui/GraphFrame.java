@@ -10,10 +10,14 @@ import org.example.Main;
 import org.example.data.*;
 import org.example.data.analysis.depthMap;
 import org.example.gui.events.*;
+import org.w3c.dom.Document;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -249,6 +253,37 @@ public class GraphFrame extends JFrame {
         exportPng.setAccelerator(KeyStroke.getKeyStroke('S', KeyEvent.CTRL_DOWN_MASK));
         exportPng.addActionListener(listener);
         menu1.add(exportPng);
+
+        JMenuItem exportSvg = new JMenuItem("Export as SVG");
+        exportSvg.setAccelerator((KeyStroke.getKeyStroke('V', KeyEvent.CTRL_DOWN_MASK)));
+        exportSvg.addActionListener(e -> {
+            JFileChooser fd = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Svg Files (.svg)", "svg");
+            fd.setFileFilter(filter);
+            int returnValue = fd.showSaveDialog(frame);
+            if (returnValue == JFileChooser.APPROVE_OPTION){
+                String filePath = fd.getSelectedFile().getAbsolutePath();
+                if (!filePath.toLowerCase().endsWith(".svg")){
+                    filePath += ".svg";
+                }
+                Document document = mxCellRenderer.createSvgDocument(graph, null, 1, new Color(30,30,30), null);
+                document.getDocumentElement().setAttribute("style", "background-color: rgb(30, 30, 30);");
+                Transformer transformer;
+                try {
+                    transformer = TransformerFactory.newInstance().newTransformer();
+                } catch (TransformerConfigurationException ex) {
+                    throw new RuntimeException(ex);
+                }
+                Result output = new StreamResult(new File(filePath));
+                Source input = new DOMSource(document);
+                try {
+                    transformer.transform(input, output);
+                } catch (TransformerException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        menu1.add(exportSvg);
 
         JMenuItem collapseAll = new JMenuItem("Collapse All");
         collapseAll.setAccelerator(KeyStroke.getKeyStroke('C', KeyEvent.CTRL_DOWN_MASK));
