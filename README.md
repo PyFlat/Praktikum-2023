@@ -6,7 +6,7 @@ Can be used to visualize the hirarchical structure of paths in the software crow
 ## Usage
 To use this software, first clone the GitHub repo and navigate to out/artifacts/Praktikum2023_jar. You will find three files located there:
 * A file named config.cfg, that includes project [config](#config)
-* A file named xyz.json . This is just a test file, and it is used for testing.
+* A folder named testdata . This folder contains some json files for testing and demonstration.
 * A java archive named Praktikum2023.jar . You can run this file. If you want more debug information, use the cmd to execute the file.
   ```java -jar Praktikum2023.jar``` **WARNING: You need to have java version 8+ installed.**
 
@@ -16,14 +16,22 @@ The config.cfg file is used to configure the project.
     <tr>
         <th>key</th>
         <th>value</th>
+        <th>default</th>
     </tr>
     <tr>
         <td>JSON</td>
         <td>Relative path to json</td>
+        <td>testdata/demo.json</td>
     </tr>
     <tr>
         <td>START_COLLAPSED</td>
         <td>Boolean whether the graph is collapsed by default or not</td>
+        <td>false</td>
+    </tr>
+  <tr>
+        <td>USE_LAYOUT</td>
+        <td>Boolean whether the graph is using the layout</td>
+        <td>true</td>
     </tr>
 </table>
 
