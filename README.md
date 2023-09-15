@@ -133,3 +133,13 @@ Configure the json with the following structure.
     <td>Lowest Frequency</td>
   </tr>
 </table>
+
+## Tools & Shortcuts
+
+The following tools are avaliable:
+* Collapse all (Strg + C)
+* Expand all (Strg + E)
+* Save as png (Strg + S)
+* Save as svg (Strg + V)
+
+All tools are accessible under the tools menu
